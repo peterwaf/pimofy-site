@@ -326,6 +326,15 @@ ul { list-style: none; }
 .cta-band__text h2 { display: flex; align-items: center; }
 .cta-band__text p { margin: 12px 0 0; }
 
+/* Legal pages (terms / privacy) */
+.legal h2 { font-size: 1.25rem; margin: 32px 0 10px; }
+.legal p { color: var(--body); }
+.legal a { text-decoration: underline; }
+.legal__list { display: grid; gap: 8px; margin: 0 0 16px; padding-left: 0; }
+.legal__list li { display: flex; gap: 10px; }
+.legal__list li::before { content: "\2022"; color: var(--purple); font-weight: 700; }
+.legal__note { margin-top: 28px; padding: 16px 18px; background: var(--bg-soft); border-radius: var(--radius-sm); color: var(--muted); font-size: 0.92rem; }
+
 /* 6) ANIMATIONS ------------------------------------------------------------- */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.is-visible { opacity: 1; transform: none; }
