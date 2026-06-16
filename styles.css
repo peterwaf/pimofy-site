@@ -292,6 +292,8 @@ ul { list-style: none; }
 .footer li { margin-bottom: 10px; font-size: 0.95rem; }
 .footer__logo { height: 30px; margin-bottom: 16px; filter: brightness(0) invert(1); }
 .footer__bottom { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 22px; font-size: 0.85rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.footer__legal { display: flex; gap: 18px; }
+.footer__legal a { text-decoration: underline; }
 
 /* Helper backgrounds */
 .callout {
