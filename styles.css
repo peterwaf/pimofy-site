@@ -352,6 +352,10 @@ ul { list-style: none; }
 .card__icon--lg { width: 72px; height: 72px; border-radius: 18px; }
 .card__icon--lg svg { width: 38px; height: 38px; }
 
+/* Extra-large card icon (Industries) */
+.card__icon--xl { width: 96px; height: 96px; border-radius: 24px; }
+.card__icon--xl svg { width: 52px; height: 52px; }
+
 /* Equal-height explore cards so the blue links align on one level */
 .explore-card { display: flex; flex-direction: column; }
 .explore-card .link { margin-top: auto; }
