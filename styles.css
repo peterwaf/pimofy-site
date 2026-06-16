@@ -356,6 +356,15 @@ ul { list-style: none; }
 .card__icon--xl { width: 96px; height: 96px; border-radius: 24px; }
 .card__icon--xl svg { width: 52px; height: 52px; }
 
+/* Belief cards (About) — icon to the left of the title */
+.belief-card { display: grid; grid-template-columns: auto 1fr; column-gap: 16px; align-items: start; }
+.belief-card .card__icon { grid-row: span 2; margin-bottom: 0; }
+.belief-card h3 { margin-bottom: 6px; }
+.belief-card p { margin: 0; }
+
+/* Stat cards (About — The Numbers) */
+.stat-card .stat__num { color: var(--blue); }
+
 /* Equal-height explore cards so the blue links align on one level */
 .explore-card { display: flex; flex-direction: column; }
 .explore-card .link { margin-top: auto; }
