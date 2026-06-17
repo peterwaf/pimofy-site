@@ -385,6 +385,13 @@ ul { list-style: none; }
 /* Contact detail cards */
 .contact-detail .stat__label { margin: 12px 0 6px; }
 
+/* Resources: article card icons (replace image placeholders) */
+.article__icon {
+  display: grid; place-items: center; aspect-ratio: 16/7;
+  background: linear-gradient(135deg, var(--purple-light), #fff); color: var(--blue);
+}
+.article__icon svg { width: 44px; height: 44px; }
+
 /* Pod grid: 4 columns, 2 items each */
 .pod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
 .pod-col { display: grid; gap: 16px; }
