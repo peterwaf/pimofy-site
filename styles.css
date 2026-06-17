@@ -462,6 +462,8 @@ ul { list-style: none; }
   .hero__actions { grid-template-columns: 1fr; max-width: 360px; margin-left: auto; margin-right: auto; }
   .hero__media { justify-content: center; }
   .hero__media img { max-width: 100%; }
+  /* Keep long hero CTA labels from overflowing the screen so centered heros stay centered */
+  .hero__copy .btn { max-width: 100%; white-space: normal; text-align: center; }
   /* Homepage hero: left-aligned on mobile (distinct from other pages) */
   .hero--home .hero__copy { text-align: left; }
   .hero--home .hero__copy .eyebrow { margin-left: 0; margin-right: 0; }
