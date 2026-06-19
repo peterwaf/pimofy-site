@@ -42,12 +42,12 @@ module.exports = {
 <p>You don't need to restructure your whole operation to find out whether capacity is your real constraint. A short review of where the hours are going usually makes it obvious. Our free Operations Capacity Audit™ maps your workflows, identifies the repetitive tasks worth delegating, and estimates the hours you could reclaim — with no obligation.</p>`,
         featured_image: '/assets/article-1.jpg',
         category: 'Operations Bottlenecks',
-        tags: ['capacity', 'saas', 'delivery'],
+        tags: JSON.stringify(['capacity', 'saas', 'delivery']),
         seo_title: 'SaaS Capacity Problem vs Delivery Problem | Pimofy Digital',
         meta_description:
           "Most SaaS teams think they have a delivery problem. It's usually a capacity problem. Here's how to spot the difference and fix it without over-hiring.",
         keywords: 'capacity, SaaS, delivery, operations, bottlenecks',
-        schema_markup: {
+        schema_markup: JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
           headline: "Most SaaS Teams Don't Have a Delivery Problem — They Have a Capacity Problem",
@@ -62,7 +62,7 @@ module.exports = {
             name: 'Pimofy Digital',
             logo: { '@type': 'ImageObject', url: 'https://pimofydigital.com/assets/logo.png' },
           },
-        },
+        }),
         published: true,
         publish_date: publishDate,
         views: 0,
@@ -94,18 +94,18 @@ module.exports = {
 <p>Clean data isn't an outcome of good technology. It's an outcome of good processes and dedicated people doing the work. The companies with reliable data are the ones that have assigned someone (or better, a team) to the task of keeping it that way.</p>`,
         featured_image: '/assets/article-2.jpg',
         category: 'Data Quality',
-        tags: ['data', 'quality', 'operations'],
+        tags: JSON.stringify(['data', 'quality', 'operations']),
         seo_title: 'The Hidden Cost of Bad Data | Pimofy Digital',
         meta_description:
           'Bad data is expensive not because of the data, but because of the decisions made on top of it. Where the real cost hides.',
         keywords: 'data quality, bad data, CRM, decision-making',
-        schema_markup: {
+        schema_markup: JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
           headline: "The Hidden Cost of Bad Data (And Why It's Not the Data)",
           image: 'https://pimofydigital.com/assets/article-2.jpg',
           datePublished: '2026-06-17',
-        },
+        }),
         published: true,
         publish_date: publishDate,
         views: 0,
@@ -117,7 +117,7 @@ module.exports = {
         id: '550e8400-e29b-41d4-a716-446655440103',
         title: "How to Protect Your Team's Capacity as Volume Grows",
         slug: 'protect-team-capacity-as-you-scale',
-        excerpt: 'As volume grows, operational work quietly eats your team's capacity. A practical framework to protect it without endless hiring.',
+        excerpt: "As volume grows, operational work quietly eats your team's capacity. A practical framework to protect it without endless hiring.",
         content: `<p>Scaling is supposed to get easier. More customers, more revenue, more efficiency because of scale. But somewhere between 50 and 500 customers, something shifts. Operational work grows faster than the team can absorb it, and suddenly your core people are drowning in the details.</p>
 
 <h2>The capacity squeeze</h2>
@@ -150,7 +150,7 @@ module.exports = {
 <p>This is what a dedicated Data Operations Pod does. It takes the routine operational load off your team and handles it with specialists who do that work all day. Your core team gets to focus on the work that actually moves the business forward. Volume grows. Your team doesn't get crushed. Everybody wins.</p>`,
         featured_image: '/assets/article-3.jpg',
         category: 'Capacity Management',
-        tags: ['scaling', 'capacity', 'growth'],
+        tags: JSON.stringify(['scaling', 'capacity', 'growth']),
         seo_title: 'Protect Team Capacity as You Scale | Pimofy Digital',
         meta_description:
           "As volume grows, operational work quietly eats your team's capacity. A practical framework to protect it without endless hiring.",
@@ -167,7 +167,7 @@ module.exports = {
         title: "You're Not Buying Labor. You're Buying Capacity.",
         slug: 'outsourcing-buying-capacity-not-labor',
         excerpt:
-          'The best companies don't outsource to buy cheap labor. They outsource to buy capacity to grow. The mindset shift that makes it work.',
+          "The best companies don't outsource to buy cheap labor. They outsource to buy capacity to grow. The mindset shift that makes it work.",
         content: `<p>Most companies think of outsourcing as a cost-cutting move. Reduce headcount. Buy cheap labor. Get work done for less money. And that's why most outsourcing initiatives disappoint.</p>
 
 <h2>The cost-cutting trap</h2>
@@ -197,10 +197,10 @@ module.exports = {
 <p>That's worth paying for. That's the outsourcing that actually creates value.</p>`,
         featured_image: '/assets/article-4.jpg',
         category: 'Outsourcing',
-        tags: ['outsourcing', 'capacity', 'strategy'],
+        tags: JSON.stringify(['outsourcing', 'capacity', 'strategy']),
         seo_title: 'Buy Capacity Not Labor | Pimofy Digital',
         meta_description:
-          'The best companies don't outsource to buy cheap labor. They outsource to buy capacity to grow. The mindset shift that makes it work.',
+          "The best companies don't outsource to buy cheap labor. They outsource to buy capacity to grow. The mindset shift that makes it work.",
         keywords: 'outsourcing, capacity, cost, labor, operations',
         published: true,
         publish_date: publishDate,
@@ -236,7 +236,7 @@ module.exports = {
 <p>You'll pay less than you're paying now in opportunity costs. Your best people will get their time back. And the data will actually be reliable, because someone's holding themselves accountable to it.</p>`,
         featured_image: '/assets/article-5.jpg',
         category: 'Team Productivity',
-        tags: ['team', 'efficiency', 'operations'],
+        tags: JSON.stringify(['team', 'efficiency', 'operations']),
         seo_title: 'Best People Data Entry | Pimofy Digital',
         meta_description:
           "When skilled people spend their days on data entry, you pay twice. How to fix the misallocation and give your team its best work back.",
@@ -278,7 +278,7 @@ module.exports = {
 <p>Turns out, when you're paying your best people $150k+ salaries to do $15/hour work, a dedicated pod actually saves money.</p>`,
         featured_image: '/assets/article-6.jpg',
         category: 'Client Success',
-        tags: ['results', 'operations', 'pod', 'backlog'],
+        tags: JSON.stringify(['results', 'operations', 'pod', 'backlog']),
         seo_title: 'Data Operations Pod Results | Pimofy Digital',
         meta_description:
           'From a growing backlog to clean, reliable data — what actually changes when a dedicated data operations pod sits behind your team.',

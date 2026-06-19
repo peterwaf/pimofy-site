@@ -2,6 +2,104 @@ const { BlogPost, User } = require('../models');
 const bcryptjs = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
+function parseCsv(csvText) {
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < csvText.length; i += 1) {
+    const ch = csvText[i];
+    const next = csvText[i + 1];
+
+    if (inQuotes) {
+      if (ch === '"') {
+        if (next === '"') {
+          field += '"';
+          i += 1;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += ch;
+      }
+      continue;
+    }
+
+    if (ch === '"') {
+      inQuotes = true;
+      continue;
+    }
+
+    if (ch === ',') {
+      row.push(field);
+      field = '';
+      continue;
+    }
+
+    if (ch === '\n') {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = '';
+      continue;
+    }
+
+    if (ch === '\r') {
+      continue;
+    }
+
+    field += ch;
+  }
+
+  if (field.length || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+function parseBool(value) {
+  const normalized = String(value || '').trim().toLowerCase();
+  return normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on';
+}
+
+function slugify(value) {
+  return String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function parseTags(value) {
+  const raw = String(value || '').trim();
+  if (!raw) {
+    return [];
+  }
+
+  const separator = raw.includes('|') ? '|' : ',';
+  return raw
+    .split(separator)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function toDateOrNull(value) {
+  const raw = String(value || '').trim();
+  if (!raw) {
+    return null;
+  }
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed;
+}
+
 class AdminController {
   // Dashboard
   static async dashboard(req, res, next) {
@@ -44,6 +142,165 @@ class AdminController {
         articles,
         currentPage: page,
         totalPages,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // CSV import form
+  static async importArticlesPage(req, res, next) {
+    try {
+      res.render('admin/articles-import', {
+        title: 'Import Articles from CSV',
+        result: null,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // CSV import handler
+  static async importArticlesCsv(req, res, next) {
+    try {
+      const mode = req.body.mode || 'upsert';
+      const csvText = req.file?.buffer?.toString('utf8') || String(req.body.csvText || '');
+      const cleanedCsvText = csvText.replace(/^\uFEFF/, '').trim();
+
+      if (!cleanedCsvText) {
+        return res.status(400).render('admin/articles-import', {
+          title: 'Import Articles from CSV',
+          result: {
+            ok: false,
+            message: 'Please upload a CSV file or paste CSV content.',
+            created: 0,
+            updated: 0,
+            skipped: 0,
+            errors: [],
+          },
+        });
+      }
+
+      const rows = parseCsv(cleanedCsvText);
+      if (!rows.length) {
+        return res.status(400).render('admin/articles-import', {
+          title: 'Import Articles from CSV',
+          result: {
+            ok: false,
+            message: 'CSV is empty.',
+            created: 0,
+            updated: 0,
+            skipped: 0,
+            errors: [],
+          },
+        });
+      }
+
+      const headers = rows[0].map((h) => String(h || '').trim());
+      const requiredHeaders = ['title', 'slug', 'excerpt', 'content'];
+      const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
+
+      if (missingHeaders.length) {
+        return res.status(400).render('admin/articles-import', {
+          title: 'Import Articles from CSV',
+          result: {
+            ok: false,
+            message: `Missing required CSV headers: ${missingHeaders.join(', ')}`,
+            created: 0,
+            updated: 0,
+            skipped: 0,
+            errors: [],
+          },
+        });
+      }
+
+      const rowData = rows.slice(1);
+      let created = 0;
+      let updated = 0;
+      let skipped = 0;
+      const errors = [];
+
+      for (let index = 0; index < rowData.length; index += 1) {
+        const lineNumber = index + 2;
+        const row = rowData[index];
+        const rowObject = {};
+
+        headers.forEach((header, i) => {
+          rowObject[header] = row[i] !== undefined ? String(row[i]).trim() : '';
+        });
+
+        const title = rowObject.title;
+        const slug = rowObject.slug || slugify(title);
+        const excerpt = rowObject.excerpt;
+        const content = rowObject.content;
+
+        if (!title && !slug && !excerpt && !content) {
+          continue;
+        }
+
+        if (!title || !slug || !excerpt || !content) {
+          skipped += 1;
+          errors.push(`Line ${lineNumber}: title, slug, excerpt, and content are required.`);
+          continue;
+        }
+
+        const publishDateFromCsv = toDateOrNull(rowObject.publishDate);
+        const isPublished = parseBool(rowObject.published);
+        const articlePayload = {
+          title,
+          slug,
+          excerpt,
+          content,
+          category: rowObject.category || null,
+          tags: parseTags(rowObject.tags),
+          seoTitle: rowObject.seoTitle || title,
+          metaDescription: rowObject.metaDescription || excerpt,
+          keywords: rowObject.keywords || null,
+          published: isPublished,
+          publishDate: isPublished ? publishDateFromCsv || new Date() : null,
+        };
+
+        const existing = await BlogPost.findOne({ where: { slug } });
+
+        if (existing) {
+          if (mode === 'create-only') {
+            skipped += 1;
+            continue;
+          }
+
+          await existing.update({
+            ...articlePayload,
+            publishDate:
+              isPublished && !existing.publishDate
+                ? articlePayload.publishDate
+                : existing.publishDate,
+          });
+          updated += 1;
+          continue;
+        }
+
+        if (mode === 'update-only') {
+          skipped += 1;
+          continue;
+        }
+
+        await BlogPost.create({
+          ...articlePayload,
+          authorId: req.session.user.id,
+        });
+        created += 1;
+      }
+
+      return res.render('admin/articles-import', {
+        title: 'Import Articles from CSV',
+        result: {
+          ok: true,
+          message: 'CSV import completed.',
+          created,
+          updated,
+          skipped,
+          errors,
+        },
       });
     } catch (error) {
       next(error);

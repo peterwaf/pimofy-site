@@ -1,0 +1,71 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<%- include('../partials/header') %>
+
+<main id="main">
+  <section class="section" style="padding-top: 36px;">
+    <div class="container" style="max-width: 980px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div>
+          <h1>Import Articles from CSV</h1>
+          <p style="color: var(--muted);">Upload a CSV file or paste CSV content to create/update blog posts in bulk.</p>
+        </div>
+        <a href="/uploads/blog-posts-import.csv" class="btn btn--ghost" download>Download Sample CSV</a>
+      </div>
+
+      <div class="card" style="margin-top: 18px;">
+        <p style="margin-top:0;color:var(--muted);">Required headers: <strong>title</strong>, <strong>slug</strong>, <strong>excerpt</strong>, <strong>content</strong></p>
+        <p style="color:var(--muted);">Optional headers: category, tags, seoTitle, metaDescription, keywords, published, publishDate</p>
+
+        <form method="POST" action="/admin/articles/import" enctype="multipart/form-data" class="form" style="gap: 14px;">
+          <div class="field">
+            <label for="mode">Import mode</label>
+            <select id="mode" name="mode">
+              <option value="upsert" selected>Upsert (create new + update existing by slug)</option>
+              <option value="create-only">Create only (skip existing slugs)</option>
+              <option value="update-only">Update only (skip new slugs)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="csvFile">CSV file</label>
+            <input id="csvFile" name="csvFile" type="file" accept=".csv,text/csv" />
+          </div>
+
+          <div class="field">
+            <label for="csvText">Or paste CSV content</label>
+            <textarea id="csvText" name="csvText" rows="10" placeholder="title,slug,excerpt,content,..."></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button type="submit" class="btn btn--primary">Import Articles</button>
+            <a href="/admin/articles" class="btn btn--ghost">Back to Articles</a>
+          </div>
+        </form>
+      </div>
+
+      <% if (result) { %>
+        <div class="card" style="margin-top: 18px; border: 1px solid <%= result.ok ? '#0f8a5f' : '#ff5a1f' %>;">
+          <h2 style="margin-top:0;"><%= result.ok ? 'Import Result' : 'Import Failed' %></h2>
+          <p><%= result.message %></p>
+          <p style="margin:0;">Created: <strong><%= result.created %></strong> | Updated: <strong><%= result.updated %></strong> | Skipped: <strong><%= result.skipped %></strong></p>
+
+          <% if (result.errors && result.errors.length) { %>
+            <div style="margin-top: 12px;">
+              <strong>Notes:</strong>
+              <ul style="margin: 8px 0 0 20px;">
+                <% result.errors.forEach((err) => { %>
+                  <li><%= err %></li>
+                <% }); %>
+              </ul>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="/js/script.js" defer></script>
