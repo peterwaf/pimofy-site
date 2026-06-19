@@ -1,74 +1,101 @@
-<a class="skip-link" href="#main">Skip to content</a>
+<div class="admin-page">
+  <section>
+    <div>
+      <div class="admin-page__header">
+        <h2><%= isNew ? 'Create Article' : 'Edit Article' %></h2>
+        <p>Manage the featured image, article structure, and SEO metadata.</p>
+      </div>
 
-<%- include('../partials/header') %>
+      <div id="article-feedback-anchor" style="scroll-margin-top: 120px;"></div>
+      <div class="form__feedback" aria-live="polite" tabindex="-1">
+        <div class="form__success<% if (articleMessage) { %> show<% } %>"><%= articleMessage || '' %></div>
+        <% if (locals.errors && errors.length) { %>
+          <div class="form__error show">
+            <strong>Please fix the following:</strong>
+            <ul>
+              <% errors.forEach((err) => { %>
+                <li><%= err.message %></li>
+              <% }); %>
+            </ul>
+          </div>
+        <% } %>
+      </div>
 
-<main id="main">
-  <section class="section" style="padding-top: 36px;">
-    <div class="container" style="max-width: 900px;">
-      <h1><%= isNew ? 'Create Article' : 'Edit Article' %></h1>
-      <p style="color: var(--muted); margin-bottom: 20px;">Manage content and SEO metadata.</p>
-
-      <% if (locals.errors && errors.length) { %>
-        <div class="form__error" style="background: #ffe6df; border: 1px solid #ff5a1f; color: #d63b14; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
-          <strong>Please fix the following:</strong>
-          <ul style="margin: 8px 0 0 20px;">
-            <% errors.forEach((err) => { %>
-              <li><%= err.message %></li>
-            <% }); %>
-          </ul>
-        </div>
-      <% } %>
-
-      <form method="POST" action="<%= isNew ? '/admin/articles' : '/admin/articles/' + article.id %>" class="form" style="gap: 14px;">
+      <form method="POST" action="<%= isNew ? '/admin/articles' : '/admin/articles/' + article.id %>" enctype="multipart/form-data" class="form admin-form" style="gap: 14px;">
         <div class="field">
           <label for="title">Title</label>
-          <input id="title" name="title" type="text" required value="<%= article ? article.title : '' %>" />
+          <input id="title" name="title" type="text" required value="<%= formData.title || (article ? article.title : '') %>" />
         </div>
 
         <div class="field">
           <label for="slug">Slug</label>
-          <input id="slug" name="slug" type="text" required value="<%= article ? article.slug : '' %>" />
+          <input id="slug" name="slug" type="text" required value="<%= formData.slug || (article ? article.slug : '') %>" />
         </div>
 
         <div class="field">
           <label for="excerpt">Excerpt</label>
-          <textarea id="excerpt" name="excerpt" required><%= article ? article.excerpt : '' %></textarea>
+          <textarea id="excerpt" name="excerpt" required><%= formData.excerpt || (article ? article.excerpt : '') %></textarea>
+        </div>
+
+        <div class="field admin-featured-image">
+          <label for="featuredImage">Featured image</label>
+          <input id="featuredImage" data-featured-image-input name="featuredImage" type="file" accept="image/*" />
+          <input type="hidden" name="existingFeaturedImage" value="<%= article && article.featuredImage ? article.featuredImage : '' %>" />
+          <button type="button" class="admin-featured-image__preview" data-featured-image-preview data-media-preview-src="<%= formData.featuredImage || (article && article.featuredImage ? article.featuredImage : '') %>" data-media-preview-alt="Featured image preview">
+            <% if (formData.featuredImage || (article && article.featuredImage)) { %>
+              <img src="<%= formData.featuredImage || article.featuredImage %>" alt="Featured image preview" />
+            <% } else { %>
+              <span>No image selected yet.</span>
+            <% } %>
+          </button>
         </div>
 
         <div class="field">
-          <label for="content">Content (HTML allowed)</label>
-          <textarea id="content" name="content" rows="14" required><%= article ? article.content : '' %></textarea>
+          <label for="content">Content</label>
+          <div class="rich-editor" data-rich-editor>
+            <div class="rich-editor__toolbar" data-rich-editor-toolbar>
+              <button type="button" data-command="formatBlock" data-value="p">P</button>
+              <button type="button" data-command="formatBlock" data-value="h2">H2</button>
+              <button type="button" data-command="formatBlock" data-value="h3">H3</button>
+              <button type="button" data-command="bold"><strong>B</strong></button>
+              <button type="button" data-command="italic"><em>I</em></button>
+              <button type="button" data-command="underline"><u>U</u></button>
+              <button type="button" data-command="insertUnorderedList">• List</button>
+            </div>
+            <div id="content" class="rich-editor__surface" contenteditable="true" data-rich-editor-surface></div>
+            <textarea name="content" class="rich-editor__source" data-rich-editor-source hidden required><%= formData.content || (article ? article.content : '') %></textarea>
+          </div>
         </div>
 
         <div class="grid grid--2" style="gap: 14px;">
           <div class="field">
             <label for="category">Category</label>
-            <input id="category" name="category" type="text" value="<%= article ? article.category : '' %>" />
+            <input id="category" name="category" type="text" value="<%= formData.category || (article ? article.category : '') %>" />
           </div>
           <div class="field">
             <label for="tags">Tags (comma separated)</label>
-            <input id="tags" name="tags" type="text" value="<%= article && article.tags ? article.tags.join(', ') : '' %>" />
+            <input id="tags" name="tags" type="text" value="<%= formData.tags || (article && article.tags ? article.tags.join(', ') : '') %>" />
           </div>
         </div>
 
         <div class="grid grid--2" style="gap: 14px;">
           <div class="field">
             <label for="seoTitle">SEO Title</label>
-            <input id="seoTitle" name="seoTitle" type="text" value="<%= article ? article.seoTitle : '' %>" />
+            <input id="seoTitle" name="seoTitle" type="text" value="<%= formData.seoTitle || (article ? article.seoTitle : '') %>" />
           </div>
           <div class="field">
             <label for="keywords">Keywords</label>
-            <input id="keywords" name="keywords" type="text" value="<%= article ? article.keywords : '' %>" />
+            <input id="keywords" name="keywords" type="text" value="<%= formData.keywords || (article ? article.keywords : '') %>" />
           </div>
         </div>
 
         <div class="field">
           <label for="metaDescription">Meta Description</label>
-          <textarea id="metaDescription" name="metaDescription"><%= article ? article.metaDescription : '' %></textarea>
+          <textarea id="metaDescription" name="metaDescription"><%= formData.metaDescription || (article ? article.metaDescription : '') %></textarea>
         </div>
 
         <div class="field" style="display: flex; align-items: center; gap: 10px;">
-          <input id="published" name="published" type="checkbox" <%= article && article.published ? 'checked' : '' %> />
+          <input id="published" name="published" type="checkbox" <%= formData.published === 'on' || (article && article.published) ? 'checked' : '' %> />
           <label for="published" style="margin: 0;">Publish now</label>
         </div>
 
@@ -79,8 +106,4 @@
       </form>
     </div>
   </section>
-</main>
-
-<%- include('../partials/footer') %>
-
-<script src="/js/script.js" defer></script>
+</div>

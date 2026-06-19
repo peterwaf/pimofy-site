@@ -101,12 +101,15 @@ app.use((req, res, next) => {
       return defaultRender(view, renderOptions, renderCallback);
     }
 
+    const { layout, ...viewOptions } = renderOptions;
+    const layoutTemplate = layout || res.locals.layout || 'layouts/main';
+
     const layoutOptions = {
-      ...renderOptions,
+      ...viewOptions,
       template: `../${view}`,
     };
 
-    return defaultRender('layouts/main', layoutOptions, renderCallback);
+    return defaultRender(layoutTemplate, layoutOptions, renderCallback);
   };
 
   next();

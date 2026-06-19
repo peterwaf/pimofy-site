@@ -1,15 +1,12 @@
-<a class="skip-link" href="#main">Skip to content</a>
+<div class="admin-page">
+  <section>
+    <div>
+      <div class="admin-page__header">
+        <h2>Content Library</h2>
+        <p>Create, edit, publish, and remove blog content.</p>
+      </div>
 
-<%- include('../partials/header') %>
-
-<main id="main">
-  <section class="section" style="padding-top: 36px;">
-    <div class="container" style="max-width: 1200px;">
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
-        <div>
-          <h1>Manage Articles</h1>
-          <p style="color: var(--muted);">Create, edit, publish, and remove blog content.</p>
-        </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <a href="/admin/articles/import" class="btn btn--ghost">Import CSV</a>
           <a href="/admin/articles/new" class="btn btn--primary">New Article</a>
@@ -73,8 +70,4 @@
       <% } %>
     </div>
   </section>
-</main>
-
-<%- include('../partials/footer') %>
-
-<script src="/js/script.js" defer></script>
+</div>

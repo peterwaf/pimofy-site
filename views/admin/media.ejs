@@ -1,18 +1,27 @@
-<a class="skip-link" href="#main">Skip to content</a>
+<div class="admin-page">
+  <section>
+    <div>
+      <div class="admin-page__header">
+        <h2>Media Library</h2>
+        <p>Upload images, preview them before publishing, and review existing assets in one place.</p>
+      </div>
 
-<%- include('../partials/header') %>
-
-<main id="main">
-  <section class="section" style="padding-top: 36px;">
-    <div class="container" style="max-width: 900px;">
-      <h1>Media Library</h1>
-      <p style="color: var(--muted); margin-bottom: 20px;">Upload and manage files used in blog content.</p>
+      <div id="media-feedback-anchor" style="scroll-margin-top: 120px;"></div>
+      <div class="form__feedback" aria-live="polite" tabindex="-1">
+        <div class="form__success<% if (mediaMessage) { %> show<% } %>"><%= mediaMessage || '' %></div>
+        <% if (mediaError) { %>
+          <div class="form__error show"><%= mediaError %></div>
+        <% } %>
+      </div>
 
       <div class="card" style="margin-bottom: 20px;">
-        <form action="/admin/media/upload" method="POST" enctype="multipart/form-data" class="form">
+        <form action="/admin/media/upload" method="POST" enctype="multipart/form-data" class="form" data-media-upload-form>
           <div class="field">
             <label for="mediaFile">Choose file</label>
-            <input id="mediaFile" type="file" name="file" accept="image/*" required />
+            <input id="mediaFile" type="file" name="file" accept="image/*" required data-media-upload-input />
+          </div>
+          <div class="media-preview" data-media-upload-preview>
+            <span>Select a file to preview it before upload.</span>
           </div>
           <button type="submit" class="btn btn--primary">Upload</button>
         </form>
@@ -20,12 +29,30 @@
 
       <div class="card">
         <h2 style="margin-bottom: 10px;">Uploads</h2>
-        <p style="color: var(--muted);">Uploaded files are served from /uploads. Media deletion UI can be extended after storage adapter finalization.</p>
+        <p style="color: var(--muted);">Click any asset to preview it full size.</p>
+
+        <div class="media-grid">
+          <% if (!mediaFiles || mediaFiles.length === 0) { %>
+            <p style="color: var(--muted); margin: 0;">No uploaded images yet.</p>
+          <% } %>
+
+          <% (mediaFiles || []).forEach((media) => { %>
+            <button type="button" class="media-card" data-media-preview-src="<%= media.url %>" data-media-preview-alt="<%= media.filename %>">
+              <img src="<%= media.url %>" alt="<%= media.filename %>" />
+              <span><%= media.filename %></span>
+            </button>
+          <% }); %>
+        </div>
+      </div>
+
+      <div class="media-modal" data-media-modal aria-hidden="true">
+        <div class="media-modal__backdrop" data-media-modal-close></div>
+        <div class="media-modal__dialog" role="dialog" aria-modal="true" aria-label="Media preview">
+          <button type="button" class="media-modal__close" data-media-modal-close aria-label="Close preview">&times;</button>
+          <img data-media-modal-image src="" alt="Media preview" />
+          <p data-media-modal-caption></p>
+        </div>
       </div>
     </div>
   </section>
-</main>
-
-<%- include('../partials/footer') %>
-
-<script src="/js/script.js" defer></script>
+</div>

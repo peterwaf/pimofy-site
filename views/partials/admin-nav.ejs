@@ -1,0 +1,29 @@
+<aside class="admin-sidebar">
+  <div class="admin-sidebar__brand">
+    <a class="admin-sidebar__logo" href="/admin" aria-label="Pimofy Admin home">
+      <img src="/assets/logo.png" alt="Pimofy Digital" />
+    </a>
+    <div>
+      <strong>Pimofy Admin</strong>
+      <span>Content workspace</span>
+    </div>
+  </div>
+
+  <nav class="admin-nav" aria-label="Admin navigation">
+    <a href="/admin" class="admin-nav__link <%= currentPath === '/admin' ? 'is-active' : '' %>">Dashboard</a>
+    <a href="/admin/articles" class="admin-nav__link <%= currentPath.startsWith('/admin/articles') ? 'is-active' : '' %>">Articles</a>
+    <a href="/admin/articles/new" class="admin-nav__link <%= currentPath === '/admin/articles/new' ? 'is-active' : '' %>">New article</a>
+    <a href="/admin/articles/import" class="admin-nav__link <%= currentPath === '/admin/articles/import' ? 'is-active' : '' %>">Import CSV</a>
+    <a href="/admin/media" class="admin-nav__link <%= currentPath === '/admin/media' ? 'is-active' : '' %>">Media library</a>
+    <% if (user && user.role === 'superadmin') { %>
+      <a href="/admin/users" class="admin-nav__link <%= currentPath.startsWith('/admin/users') ? 'is-active' : '' %>">Users</a>
+    <% } %>
+  </nav>
+
+  <div class="admin-sidebar__footer">
+    <a href="/" class="btn btn--ghost admin-sidebar__button">View site</a>
+    <% if (user) { %>
+      <a href="/auth/logout" class="btn btn--primary admin-sidebar__button">Logout</a>
+    <% } %>
+  </div>
+</aside>

@@ -1,14 +1,27 @@
-<a class="skip-link" href="#main">Skip to content</a>
-
-<!-- Header / Navigation -->
-<%- include('../partials/header') %>
-
-<main id="main">
-<div style="max-width: 1200px; margin: 0 auto; padding: 40px 24px;">
-  <div style="margin-bottom: 40px;">
-    <h1>Admin Dashboard</h1>
-    <p style="color: var(--muted); margin-top: 8px;">Welcome back, <%= user.name %>!</p>
-  </div>
+<div class="admin-page">
+<div class="admin-grid admin-grid--dashboard">
+  <section class="admin-welcome card reveal">
+    <div class="admin-welcome__copy">
+      <span class="eyebrow">Admin workspace</span>
+      <h1>Welcome back, <%= user.name %>.</h1>
+      <p>Your content and media operations are ready. Use the shortcuts below to create an article, review uploads, or manage users.</p>
+      <div class="admin-welcome__actions">
+        <a href="/admin/articles/new" class="btn btn--primary">New Article</a>
+        <a href="/admin/media" class="btn btn--ghost">Open Media Library</a>
+      </div>
+    </div>
+    <div class="admin-welcome__panel">
+      <div>
+        <strong>Today</strong>
+        <p>Keep your article queue moving and preview media before publishing.</p>
+      </div>
+      <div class="admin-welcome__stats">
+        <span><strong><%= totalArticles %></strong> Articles</span>
+        <span><strong><%= draftArticles %></strong> Drafts</span>
+        <span><strong><%= totalUsers %></strong> Users</span>
+      </div>
+    </div>
+  </section>
 
   <!-- Stats Grid -->
   <div class="grid grid--4" style="margin-bottom: 40px;">
@@ -84,9 +97,4 @@
     </div>
   <% } %>
 </div>
-</main>
-
-<!-- Footer -->
-<%- include('../partials/footer') %>
-
-<script src="/js/script.js" defer></script>
+</div>

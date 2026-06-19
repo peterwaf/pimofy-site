@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= typeof title !== 'undefined' ? title + ' | Pimofy Admin' : 'Pimofy Admin' %></title>
+    <meta name="description" content="Admin console for Pimofy Digital content and operations" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/js/admin.js" defer></script>
+  </head>
+  <body class="admin-body">
+    <a class="skip-link" href="#admin-main">Skip to content</a>
+    <div class="admin-shell">
+      <%- include('../partials/admin-nav') %>
+      <div class="admin-shell__content">
+        <header class="admin-topbar">
+          <div>
+            <p class="admin-topbar__eyebrow">Admin console</p>
+            <h1><%= typeof title !== 'undefined' ? title : 'Dashboard' %></h1>
+          </div>
+          <div class="admin-topbar__user">
+            <% if (user) { %>
+              <span><strong><%= user.name %></strong></span>
+              <span><%= user.role %></span>
+            <% } %>
+          </div>
+        </header>
+        <main id="admin-main" class="admin-main">
+          <%- include(template) %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
