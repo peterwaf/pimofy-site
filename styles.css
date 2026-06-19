@@ -287,8 +287,12 @@ ul { list-style: none; }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-light); outline: none; }
 .field textarea { min-height: 120px; resize: vertical; }
 .form__note { font-size: 0.88rem; color: var(--muted); }
+.form__feedback { display: grid; gap: 10px; }
 .form__success { background: #eefbf3; border: 1px solid #b7ebca; color: #1c7c4a; padding: 14px 18px; border-radius: var(--radius-sm); display: none; }
 .form__success.show { display: block; }
+.form__error { background: #ffe6df; border: 1px solid #ff5a1f; color: #d63b14; padding: 14px 18px; border-radius: var(--radius-sm); display: none; }
+.form__error.show { display: block; }
+.form__error ul { margin: 8px 0 0 20px; }
 
 /* Footer */
 .footer { background: var(--ink); color: #c9c6d8; padding: 64px 0 28px; }

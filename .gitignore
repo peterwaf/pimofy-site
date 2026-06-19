@@ -1,0 +1,49 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Node dependencies
+node_modules/
+npm-debug.log
+npm-error.log
+yarn-error.log
+
+# OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Application logs
+logs/
+*.log
+pids/
+*.pid
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Uploads (exclude folder but include .gitkeep)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Build output
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Database
+*.db
+*.sqlite

@@ -1,0 +1,92 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- Header / Navigation -->
+<%- include('../partials/header') %>
+
+<main id="main">
+<div style="max-width: 1200px; margin: 0 auto; padding: 40px 24px;">
+  <div style="margin-bottom: 40px;">
+    <h1>Admin Dashboard</h1>
+    <p style="color: var(--muted); margin-top: 8px;">Welcome back, <%= user.name %>!</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid--4" style="margin-bottom: 40px;">
+    <div class="card reveal">
+      <div class="stat__num" style="color: var(--blue);"><%= totalArticles %></div>
+      <div class="stat__label">Total Articles</div>
+    </div>
+    <div class="card reveal" data-delay="1">
+      <div class="stat__num" style="color: var(--green, #22c55e);"><%= publishedArticles %></div>
+      <div class="stat__label">Published</div>
+    </div>
+    <div class="card reveal" data-delay="2">
+      <div class="stat__num" style="color: var(--orange);"><%= draftArticles %></div>
+      <div class="stat__label">Drafts</div>
+    </div>
+    <div class="card reveal" data-delay="3">
+      <div class="stat__num" style="color: var(--purple);"><%= totalUsers %></div>
+      <div class="stat__label">Users</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="grid grid--2" style="margin-bottom: 40px;">
+    <div class="card card--feature reveal">
+      <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+      <h3>Create New Article</h3>
+      <p>Write and publish a new blog post to the resources page.</p>
+      <a href="/admin/articles/new" class="link">Create Article →</a>
+    </div>
+
+    <div class="card card--feature reveal" data-delay="1">
+      <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <h3>Manage Media</h3>
+      <p>Upload images and manage your media library.</p>
+      <a href="/admin/media" class="link">Go to Media →</a>
+    </div>
+  </div>
+
+  <!-- Articles List -->
+  <div class="card reveal">
+    <h2 style="margin-bottom: 20px;">Recent Articles</h2>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; font-size: 0.95rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--line);">
+            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Title</th>
+            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Status</th>
+            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Author</th>
+            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Articles would be listed here -->
+          <tr style="border-bottom: 1px solid var(--line);">
+            <td colspan="4" style="text-align: center; padding: 20px; color: var(--muted);">
+              <a href="/admin/articles" style="color: var(--purple); font-weight: 600;">View all articles →</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <% if (user.role === 'superadmin') { %>
+    <div class="card reveal" style="margin-top: 20px;">
+      <h2 style="margin-bottom: 20px;">Admin Tools</h2>
+      <div class="grid grid--2">
+        <a href="/admin/users" class="btn btn--ghost" style="text-align: center; padding: 20px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 10px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Manage Users
+        </a>
+      </div>
+    </div>
+  <% } %>
+</div>
+</main>
+
+<!-- Footer -->
+<%- include('../partials/footer') %>
+
+<script src="/js/script.js" defer></script>

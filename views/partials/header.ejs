@@ -1,0 +1,40 @@
+<header class="header">
+  <div class="container">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav__logo" href="/" aria-label="Pimofy Digital home">
+        <img src="/assets/logo.png" alt="Pimofy Digital" />
+      </a>
+      <ul class="nav__menu">
+        <li><a href="/" <% if (currentPath === '/') { %>aria-current="page"<% } %>>Home</a></li>
+        <li class="dropdown" aria-expanded="false">
+          <button class="dropdown__toggle" aria-haspopup="true">
+            Solutions
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <ul class="dropdown__menu">
+            <li><a href="/solutions"><strong>Solutions Overview</strong><span>One focused solution, built around your data</span></a></li>
+            <li><a href="/data-operations"><strong>The Data Operations Pod™</strong><span>Dedicated specialist + QA</span></a></li>
+            <li><a href="/capacity-audit"><strong>Free Operations Capacity Audit™</strong><span>No-obligation workflow review</span></a></li>
+          </ul>
+        </li>
+        <li><a href="/industries">Industries</a></li>
+        <li><a href="/blog" <% if (currentPath === '/blog' || currentPath.startsWith('/blog/')) { %>aria-current="page"<% } %>>Resources</a></li>
+        <li><a href="/about">About</a></li>
+        <li class="nav__mobile-cta"><a href="/contact" class="btn btn--primary">Book a Call</a></li>
+        <% if (user) { %>
+          <li><a href="/admin">Admin</a></li>
+          <li><a href="/auth/logout">Logout</a></li>
+        <% } %>
+      </ul>
+      <div class="nav__actions">
+        <a href="/contact" class="btn btn--primary">Book a Call</a>
+        <% if (user) { %>
+          <a href="/admin" class="btn btn--ghost">Admin</a>
+        <% } %>
+      </div>
+      <button class="nav__burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+</header>

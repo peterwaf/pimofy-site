@@ -1,0 +1,77 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<%- include('../partials/header') %>
+
+<main id="main">
+  <section class="section" style="padding-top: 36px;">
+    <div class="container" style="max-width: 1200px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+        <div>
+          <h1>Manage Articles</h1>
+          <p style="color: var(--muted);">Create, edit, publish, and remove blog content.</p>
+        </div>
+        <a href="/admin/articles/new" class="btn btn--primary">New Article</a>
+      </div>
+
+      <div class="card" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--line);">
+              <th style="text-align: left; padding: 10px 8px;">Title</th>
+              <th style="text-align: left; padding: 10px 8px;">Category</th>
+              <th style="text-align: left; padding: 10px 8px;">Status</th>
+              <th style="text-align: left; padding: 10px 8px;">Author</th>
+              <th style="text-align: left; padding: 10px 8px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!articles || articles.length === 0) { %>
+              <tr>
+                <td colspan="5" style="padding: 16px 8px; color: var(--muted);">No articles found.</td>
+              </tr>
+            <% } %>
+            <% (articles || []).forEach((article) => { %>
+              <tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 12px 8px;">
+                  <strong><%= article.title %></strong>
+                  <div style="font-size: 0.88rem; color: var(--muted);">/<%= article.slug %></div>
+                </td>
+                <td style="padding: 12px 8px;"><%= article.category || '-' %></td>
+                <td style="padding: 12px 8px;">
+                  <% if (article.published) { %>
+                    <span class="tag">Published</span>
+                  <% } else { %>
+                    <span class="tag" style="background: #ffe6df; color: #d63b14;">Draft</span>
+                  <% } %>
+                </td>
+                <td style="padding: 12px 8px;"><%= article.author ? article.author.name : 'Unknown' %></td>
+                <td style="padding: 12px 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                  <a href="/admin/articles/<%= article.id %>/edit" class="btn btn--ghost">Edit</a>
+                  <form method="POST" action="/admin/articles/<%= article.id %>/delete" onsubmit="return confirm('Delete this article?');">
+                    <button type="submit" class="btn btn--ghost">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if (totalPages > 1) { %>
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 20px; flex-wrap: wrap;">
+          <% if (currentPage > 1) { %>
+            <a class="btn btn--ghost" href="/admin/articles?page=<%= currentPage - 1 %>">Previous</a>
+          <% } %>
+          <span class="btn btn--ghost" style="pointer-events: none;">Page <%= currentPage %> of <%= totalPages %></span>
+          <% if (currentPage < totalPages) { %>
+            <a class="btn btn--ghost" href="/admin/articles?page=<%= currentPage + 1 %>">Next</a>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="/js/script.js" defer></script>

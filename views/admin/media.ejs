@@ -1,0 +1,31 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<%- include('../partials/header') %>
+
+<main id="main">
+  <section class="section" style="padding-top: 36px;">
+    <div class="container" style="max-width: 900px;">
+      <h1>Media Library</h1>
+      <p style="color: var(--muted); margin-bottom: 20px;">Upload and manage files used in blog content.</p>
+
+      <div class="card" style="margin-bottom: 20px;">
+        <form action="/admin/media/upload" method="POST" enctype="multipart/form-data" class="form">
+          <div class="field">
+            <label for="mediaFile">Choose file</label>
+            <input id="mediaFile" type="file" name="file" accept="image/*" required />
+          </div>
+          <button type="submit" class="btn btn--primary">Upload</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom: 10px;">Uploads</h2>
+        <p style="color: var(--muted);">Uploaded files are served from /uploads. Media deletion UI can be extended after storage adapter finalization.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="/js/script.js" defer></script>

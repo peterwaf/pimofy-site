@@ -1,0 +1,57 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<%- include('../partials/header') %>
+
+<main id="main">
+  <section class="hero">
+    <div class="container text-center" style="max-width: 780px;">
+      <span class="eyebrow">Resources Search</span>
+      <h1>Search Insights</h1>
+      <p class="lead">Find articles on data operations, scaling, and team capacity.</p>
+    </div>
+  </section>
+
+  <section class="section section--soft" style="padding-top: 24px;">
+    <div class="container" style="max-width: 780px;">
+      <form method="GET" action="/blog/search" class="form" style="display: grid; gap: 12px;">
+        <label for="q">Search query</label>
+        <input id="q" name="q" type="text" value="<%= query || '' %>" placeholder="Try: crm cleanup, backlog, ecommerce" />
+        <button type="submit" class="btn btn--primary">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <% if (!query || !query.trim()) { %>
+        <p class="text-center" style="color: var(--muted);">Enter at least 2 characters to search articles.</p>
+      <% } else if (!posts || posts.length === 0) { %>
+        <p class="text-center" style="color: var(--muted);">No articles found for "<%= query %>".</p>
+      <% } else { %>
+        <div class="section__head">
+          <h2>Results for "<%= query %>"</h2>
+          <p><%= posts.length %> article(s) found.</p>
+        </div>
+        <div class="grid grid--3">
+          <% posts.forEach((post) => { %>
+            <a class="card article" href="/blog/<%= post.slug %>">
+              <div class="article__thumb">
+                <img class="article__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" />
+                <span class="tag tag--overlay"><%= post.category %></span>
+              </div>
+              <div class="article__body">
+                <h3><%= post.title %></h3>
+                <p><%= post.excerpt %></p>
+                <span class="link">Read more -></span>
+              </div>
+            </a>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="/js/script.js" defer></script>

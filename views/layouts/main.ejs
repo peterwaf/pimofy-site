@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= typeof title !== 'undefined' ? title + ' | Pimofy Digital' : 'Pimofy Digital' %></title>
+    <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'Dedicated data operations for SaaS and Ecommerce companies' %>" />
+    <% if (typeof keywords !== 'undefined') { %><meta name="keywords" content="<%= keywords %>" /><% } %>
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= config.app.url %>" />
+
+    <!-- Preconnect to fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/styles.css" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'Pimofy Digital' %>" />
+    <meta property="og:description" content="<%= typeof description !== 'undefined' ? description : 'Dedicated data operations for SaaS and Ecommerce companies' %>" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= config.app.url %>" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : 'Pimofy Digital' %>" />
+    <meta name="twitter:description" content="<%= typeof description !== 'undefined' ? description : 'Dedicated data operations for SaaS and Ecommerce companies' %>" />
+
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Pimofy Digital",
+      "url": "https://pimofydigital.com",
+      "description": "Dedicated data operations for SaaS and Ecommerce companies",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Nairobi",
+        "addressCountry": "KE"
+      }
+    }
+    </script>
+
+    <% if (typeof schemaMarkup !== 'undefined' && schemaMarkup) { %>
+      <script type="application/ld+json">
+        <%- JSON.stringify(schemaMarkup) %>
+      </script>
+    <% } %>
+  </head>
+  <body>
+    <%- include(template) %>
+  </body>
+</html>

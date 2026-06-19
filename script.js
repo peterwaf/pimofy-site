@@ -83,21 +83,48 @@
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
   }
 
-  /* --- 6) Contact form (front-end only; wire to email/CRM later) --------- */
+  /* --- 6) Contact form (front-end only fallback) -------------------------- */
   var form = document.querySelector('#contact-form');
   if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      // Basic native validation already runs; on success show confirmation.
-      var success = form.querySelector('.form__success');
-      if (success) {
-        success.classList.add('show');
-        success.setAttribute('role', 'status');
+    var method = (form.getAttribute('method') || 'get').toLowerCase();
+    var action = (form.getAttribute('action') || '').trim();
+    var usesBackendSubmit = method === 'post' && action.length > 0;
+
+    // Keep static prototype pages usable, but never block real backend submits.
+    if (!usesBackendSubmit) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var success = form.querySelector('.form__success');
+        if (success) {
+          success.classList.add('show');
+          success.setAttribute('role', 'status');
+        }
+        form.reset();
+      });
+    }
+
+    // If redirected with a contact feedback anchor, keep focus on feedback
+    // but clean query/hash so refresh or share links stay tidy.
+    var feedback = form.querySelector('.form__feedback');
+    var url = new URL(window.location.href);
+    var hasFeedbackHash =
+      window.location.hash === '#contact-feedback-anchor' ||
+      window.location.hash === '#contact-success-feedback' ||
+      window.location.hash === '#contact-error-feedback';
+    var hasStatusParam = url.searchParams.has('success') || url.searchParams.has('error');
+
+    if (feedback && hasFeedbackHash && hasStatusParam) {
+      var hasVisibleMessage = !!feedback.querySelector('.form__success.show, .form__error.show');
+      if (hasVisibleMessage) {
+        setTimeout(function () {
+          var cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete('success');
+          cleanUrl.searchParams.delete('error');
+          cleanUrl.hash = '';
+          window.history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search);
+        }, 1200);
       }
-      form.reset();
-      // NOTE for developer: POST form data to your backend / form service
-      // (e.g. Formspree, Netlify Forms, or your CRM endpoint) here.
-    });
+    }
   }
 
   /* --- 7) Footer year ----------------------------------------------------- */

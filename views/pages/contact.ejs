@@ -1,0 +1,166 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header">
+    <div class="container">
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__logo" href="/" aria-label="Pimofy Digital home"><img src="/assets/logo.png" alt="Pimofy Digital" /></a>
+        <ul class="nav__menu">
+          <li><a href="/">Home</a></li>
+          <li class="dropdown" aria-expanded="false">
+            <button class="dropdown__toggle" aria-haspopup="true">Solutions
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <ul class="dropdown__menu">
+              <li><a href="/solutions"><strong>Solutions Overview</strong><span>One focused solution, built around your data</span></a></li>
+              <li><a href="/data-operations"><strong>The Data Operations Pod&trade;</strong><span>Dedicated specialist + QA</span></a></li>
+              <li><a href="/capacity-audit"><strong>Free Operations Capacity Audit&trade;</strong><span>No-obligation workflow review</span></a></li>
+            </ul>
+          </li>
+          <li><a href="/industries">Industries</a></li>
+          <li><a href="/blog">Resources</a></li>
+          <li><a href="/about">About</a></li>
+          <li class="nav__mobile-cta"><a href="/contact" class="btn btn--primary" aria-current="page">Book a Call</a></li>
+        </ul>
+        <div class="nav__actions"><a href="/contact" class="btn btn--primary">Book a Call</a></div>
+        <button class="nav__burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" style="padding-bottom:32px;">
+      <div class="container text-center reveal" style="max-width:760px;">
+        <span class="eyebrow">Book a Call</span>
+        <h1>Let&rsquo;s Talk About Your Data Operations</h1>
+        <p class="lead">Book a free discovery call and receive a complimentary Operations Capacity Audit&trade;. We&rsquo;ll review your workflows, pinpoint where your team is losing time, and show whether a dedicated data operations pod is the right fit. No obligation.</p>
+      </div>
+    </section>
+
+    <!-- WHAT HAPPENS + BOOKING -->
+    <section class="section" style="padding-top:24px;">
+      <div class="container">
+        <div class="grid grid--2" style="align-items:start;">
+          <!-- What happens on the call -->
+          <div class="reveal">
+            <div class="contact-call-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></div>
+            <h2 style="font-size:1.5rem;margin-bottom:18px;">What Happens on the Call</h2>
+            <ul class="checklist checklist--lg">
+              <li><span class="check check--blue check--lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span> <span><strong>A quick review of your workflows</strong> &mdash; where repetitive data work is piling up.</span></li>
+              <li><span class="check check--blue check--lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span> <span><strong>Your free Operations Capacity Audit&trade;</strong> &mdash; the tasks worth delegating and the hours you could reclaim.</span></li>
+              <li><span class="check check--blue check--lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span> <span><strong>A practical recommendation</strong> &mdash; a clear next step, whether that&rsquo;s a pilot, a pod, or simply advice.</span></li>
+            </ul>
+            <p style="margin-top:18px;color:var(--muted);">About 30 minutes. No pressure to commit.</p>
+
+            <!-- Calendly embed placeholder -->
+            <!-- DEVELOPER: replace the div below with your Calendly inline embed.
+                 1) Add this once before </body>:
+                    <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+                 2) Set data-url to your scheduling link. -->
+            <div class="calendly-inline-widget" data-url="https://calendly.com/YOUR-LINK/30min"
+                 style="min-width:320px;height:640px;border:1px dashed var(--line);border-radius:var(--radius);display:grid;place-items:center;color:var(--muted);text-align:center;padding:24px;margin-top:24px;">
+              Calendly scheduler embeds here.<br />Replace data-url with your booking link.
+            </div>
+          </div>
+
+          <!-- Fallback contact form -->
+          <div class="reveal" data-delay="1">
+            <div class="card">
+              <h2 style="font-size:1.5rem;margin-bottom:6px;">Book Your Free Call</h2>
+              <p style="color:var(--muted);margin-bottom:20px;">Prefer email? Send the details below and we&rsquo;ll be in touch.</p>
+              <form class="form" id="contact-form" method="POST" action="/contact" novalidate>
+                <div class="form__row">
+                  <div class="field"><label for="name">Full name *</label><input id="name" name="name" type="text" required autocomplete="name" value="<%= formData.name || '' %>" /></div>
+                  <div class="field"><label for="email">Work email *</label><input id="email" name="email" type="email" required autocomplete="email" value="<%= formData.email || '' %>" /></div>
+                </div>
+                <div class="form__row">
+                  <div class="field"><label for="company">Company *</label><input id="company" name="company" type="text" required autocomplete="organization" value="<%= formData.company || '' %>" /></div>
+                  <div class="field"><label for="type">Company type</label>
+                    <select id="type" name="type"><option value="">Select&hellip;</option><option value="SaaS"<% if (formData.type === 'SaaS') { %> selected<% } %>>SaaS</option><option value="Ecommerce"<% if (formData.type === 'Ecommerce') { %> selected<% } %>>Ecommerce</option><option value="Other"<% if (formData.type === 'Other') { %> selected<% } %>>Other</option></select>
+                  </div>
+                </div>
+                <div class="field"><label for="website">Website</label><input id="website" name="website" type="url" autocomplete="url" placeholder="example.com or www.example.com" value="<%= formData.website || '' %>" /></div>
+                <div class="field"><label for="message">What&rsquo;s slowing your team down? *</label><textarea id="message" name="message" required minlength="20" maxlength="4000"><%= formData.message || '' %></textarea></div>
+                <div id="contact-feedback-anchor" style="scroll-margin-top:120px;"></div>
+                <div class="form__feedback" aria-live="polite" tabindex="-1">
+                  <div class="form__success<% if (contactSuccess) { %> show<% } %>">Thanks &mdash; your request has been received. We&rsquo;ll reply within one business day.</div>
+                  <% if (errors && errors.length) { %>
+                    <div class="form__error show">
+                      <strong>Please fix the following:</strong>
+                      <ul>
+                        <% errors.forEach((err) => { %>
+                          <li><%= err.message %></li>
+                        <% }); %>
+                      </ul>
+                    </div>
+                  <% } %>
+                </div>
+                <button type="submit" class="btn btn--primary btn--lg" style="justify-content:center;">Request My Free Capacity Audit&trade;</button>
+                <p class="form__note">We operate under NDA as standard and will never share your details. Expect a reply within one business day.</p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOM REQUIREMENT -->
+    <section class="section section--soft">
+      <div class="container text-center reveal" style="max-width:760px;">
+        <h2>Have a Requirement That Doesn&rsquo;t Fit a Standard Pod?</h2>
+        <p>You may have a mix of processes or a project that spans several workflows. Send us your specifications&mdash;or start with a small pilot so you can see the quality before you commit. Many of our engagements begin in a pilot phase.</p>
+      </div>
+    </section>
+
+    <!-- CONTACT DETAILS -->
+    <section class="section">
+      <div class="container">
+        <div class="grid grid--3 reveal">
+          <div class="card text-center contact-detail">
+            <div class="card__icon" style="margin-left:auto;margin-right:auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg></div>
+            <div class="stat__label">Email</div>
+            <a href="mailto:info@pimofydigital.com" style="font-weight:600;">info@pimofydigital.com</a>
+          </div>
+          <div class="card text-center contact-detail">
+            <div class="card__icon" style="margin-left:auto;margin-right:auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="stat__label">Based in</div>
+            <span style="font-weight:600;color:var(--ink);">Nairobi, Kenya (GMT+3)</span>
+          </div>
+          <div class="card text-center contact-detail">
+            <div class="card__icon" style="margin-left:auto;margin-right:auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div class="stat__label">Serving</div>
+            <span style="font-weight:600;color:var(--ink);">UK, Europe &amp; USA</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-band">
+      <div class="container cta-band__grid reveal">
+        <div class="cta-band__text">
+          <h2>
+            <span class="cta-band__bookicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+            We Onboard Only 3 New Clients per Month
+          </h2>
+          <p>If you&rsquo;re considering support for an upcoming quarter, it&rsquo;s worth booking your call early.</p>
+        </div>
+        <div class="cta-band__action">
+          <a href="#main" class="btn btn--white btn--lg">Book Your Free Capacity Audit&trade;</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div><img src="/assets/logo.png" alt="Pimofy Digital" class="footer__logo" /><p>Dedicated data operations for SaaS and Ecommerce companies. Based in Nairobi, serving the UK, Europe, and the USA.</p></div>
+        <div><h4>Solutions</h4><ul><li><a href="/solutions">Overview</a></li><li><a href="/data-operations">Data Operations Pod&trade;</a></li><li><a href="/capacity-audit">Capacity Audit&trade;</a></li></ul></div>
+        <div><h4>Company</h4><ul><li><a href="/industries">Industries</a></li><li><a href="/blog">Resources</a></li><li><a href="/about">About</a></li></ul></div>
+        <div><h4>Get Started</h4><ul><li><a href="/contact">Book a Call</a></li><li><a href="mailto:info@pimofydigital.com">info@pimofydigital.com</a></li></ul></div>
+      </div>
+      <div class="footer__bottom"><span>&copy; <span id="year">2026</span> Pimofy Digital. All rights reserved.</span><span class="footer__legal"><a href="/terms">Terms &amp; Conditions</a><a href="/privacy">Privacy Policy</a></span><span>Nairobi, Kenya &middot; Serving UK, EU &amp; USA</span></div>
+    </div>
+  </footer>
+  <script src="/script.js" defer></script>

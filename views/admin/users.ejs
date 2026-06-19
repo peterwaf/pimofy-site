@@ -1,0 +1,63 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<%- include('../partials/header') %>
+
+<main id="main">
+  <section class="section" style="padding-top: 36px;">
+    <div class="container" style="max-width: 1100px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+        <div>
+          <h1>Manage Users</h1>
+          <p style="color: var(--muted);">Create and control admin access.</p>
+        </div>
+        <a href="/admin/users/new" class="btn btn--primary">New User</a>
+      </div>
+
+      <div class="card" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--line);">
+              <th style="text-align: left; padding: 10px 8px;">Name</th>
+              <th style="text-align: left; padding: 10px 8px;">Email</th>
+              <th style="text-align: left; padding: 10px 8px;">Role</th>
+              <th style="text-align: left; padding: 10px 8px;">Status</th>
+              <th style="text-align: left; padding: 10px 8px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!users || users.length === 0) { %>
+              <tr>
+                <td colspan="5" style="padding: 16px 8px; color: var(--muted);">No users found.</td>
+              </tr>
+            <% } %>
+            <% (users || []).forEach((u) => { %>
+              <tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 12px 8px;"><strong><%= u.name %></strong></td>
+                <td style="padding: 12px 8px;"><%= u.email %></td>
+                <td style="padding: 12px 8px;"><span class="tag"><%= u.role %></span></td>
+                <td style="padding: 12px 8px;">
+                  <% if (u.active) { %>
+                    <span class="tag" style="background: #e9f9ed; color: #127a36;">Active</span>
+                  <% } else { %>
+                    <span class="tag" style="background: #ffe6df; color: #d63b14;">Disabled</span>
+                  <% } %>
+                </td>
+                <td style="padding: 12px 8px;">
+                  <% if (u.active) { %>
+                    <form method="POST" action="/admin/users/<%= u.id %>/disable" onsubmit="return confirm('Disable this user?');">
+                      <button type="submit" class="btn btn--ghost">Disable</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script src="/js/script.js" defer></script>
