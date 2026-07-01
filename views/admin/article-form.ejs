@@ -33,6 +33,7 @@
           : (article && Array.isArray(article.tags) ? article.tags : [])); %>
 
       <form method="POST" action="<%= isNew ? '/admin/articles' : '/admin/articles/' + article.id %>" enctype="multipart/form-data" class="form admin-form" style="gap: 14px;">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
         <div class="field">
           <label for="title">Title</label>
           <input id="title" name="title" type="text" required value="<%= formData.title || (article ? article.title : '') %>" />
@@ -128,16 +129,22 @@
           <div class="field">
             <label for="seoTitle">SEO Title</label>
             <input id="seoTitle" name="seoTitle" type="text" value="<%= formData.seoTitle || (article ? article.seoTitle : '') %>" />
+            <p class="form__note">Aim for 50-60 characters and keep the primary keyword near the beginning.</p>
+            <p class="form__note">Example: B2B Data Operations Audit Checklist for Growing Teams</p>
           </div>
           <div class="field">
             <label for="keywords">Keywords</label>
             <input id="keywords" name="keywords" type="text" value="<%= formData.keywords || (article ? article.keywords : '') %>" />
+            <p class="form__note">Use 3-8 focused phrases separated by commas. Avoid broad or repeated terms.</p>
+            <p class="form__note">Example: data operations audit, b2b seo strategy, analytics governance</p>
           </div>
         </div>
 
         <div class="field">
           <label for="metaDescription">Meta Description</label>
           <textarea id="metaDescription" name="metaDescription"><%= formData.metaDescription || (article ? article.metaDescription : '') %></textarea>
+          <p class="form__note">Write a clear summary in 140-160 characters, include the primary keyword once, and add a strong action phrase.</p>
+          <p class="form__note">Example: Improve campaign performance with this practical data operations audit guide built for B2B teams that need cleaner reporting and faster decisions.</p>
         </div>
 
         <div class="field" style="display: flex; align-items: center; gap: 10px;">

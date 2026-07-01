@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%= csrfToken %>" />
     <title><%= typeof title !== 'undefined' ? title + ' | Pimofy Digital' : 'Pimofy Digital' %></title>
     <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'Dedicated data operations for SaaS and Ecommerce companies' %>" />
     <% if (typeof keywords !== 'undefined') { %><meta name="keywords" content="<%= keywords %>" /><% } %>

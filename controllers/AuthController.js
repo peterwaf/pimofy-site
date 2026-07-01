@@ -2,6 +2,10 @@ const { User } = require('../models');
 const bcryptjs = require('bcryptjs');
 
 class AuthController {
+  static setAuthError(req, message = 'Invalid email or password') {
+    req.session.errors = [{ field: 'form', message }];
+  }
+
   // Show login page
   static async loginPage(req, res, next) {
     try {
@@ -26,18 +30,19 @@ class AuthController {
   static async login(req, res, next) {
     try {
       const { email, password } = req.body;
+      const normalizedEmail = String(email || '').trim().toLowerCase();
 
       // Find user by email
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({ where: { email: normalizedEmail } });
 
       if (!user) {
-        req.session.errors = [{ field: 'email', message: 'Email not found' }];
+        AuthController.setAuthError(req);
         return res.redirect('/auth/login');
       }
 
       // Check if user is active
       if (!user.active) {
-        req.session.errors = [{ field: 'email', message: 'This account has been disabled' }];
+        AuthController.setAuthError(req);
         return res.redirect('/auth/login');
       }
 
@@ -45,20 +50,29 @@ class AuthController {
       const passwordMatch = await bcryptjs.compare(password, user.password);
 
       if (!passwordMatch) {
-        req.session.errors = [{ field: 'password', message: 'Invalid password' }];
+        AuthController.setAuthError(req);
         return res.redirect('/auth/login');
       }
 
-      // Set session user
-      req.session.user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      };
+      return req.session.regenerate((regenerateError) => {
+        if (regenerateError) {
+          return next(regenerateError);
+        }
 
-      // Redirect to admin dashboard
-      res.redirect('/admin');
+        req.session.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+
+        return req.session.save((saveError) => {
+          if (saveError) {
+            return next(saveError);
+          }
+          return res.redirect('/admin');
+        });
+      });
     } catch (error) {
       next(error);
     }

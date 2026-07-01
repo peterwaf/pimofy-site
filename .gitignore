@@ -2,7 +2,7 @@
 .env
 .env.local
 .env.*.local
-.env.example
+docs/local-setup-private.md
 
 # Node dependencies
 node_modules/

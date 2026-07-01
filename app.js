@@ -6,15 +6,44 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const config = require('./config/environment');
+const { csrfTokenMiddleware, csrfProtectionMiddleware } = require('./middleware/csrf');
 const { sequelize } = require('./models');
 
 // Create Express app
 const app = express();
 
+if (config.app.isProduction) {
+  app.set('trust proxy', 1);
+}
+
+app.disable('x-powered-by');
+
 // ============================================
 // SECURITY MIDDLEWARE
 // ============================================
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        formAction: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    hsts: config.app.isProduction
+      ? { maxAge: 31536000, includeSubDomains: true, preload: true }
+      : false,
+  })
+);
 app.use(compression());
 
 // Rate limiting
@@ -22,6 +51,8 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 if (config.app.isProduction) {
@@ -52,6 +83,7 @@ const sessionStore = new SequelizeStore({
 
 app.use(
   session({
+    name: 'pimofy.sid',
     secret: config.session.secret,
     store: sessionStore,
     resave: false,
@@ -59,6 +91,7 @@ app.use(
     cookie: {
       secure: config.app.isProduction, // HTTPS only in production
       httpOnly: true,
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
@@ -93,6 +126,9 @@ app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   next();
 });
+
+app.use(csrfTokenMiddleware);
+app.use(csrfProtectionMiddleware);
 
 // Render all views through the main layout unless explicitly disabled.
 app.use((req, res, next) => {

@@ -1,8 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const { body } = require('express-validator');
 const { handleValidationErrors } = require('../middleware/validation');
 const ContactController = require('../controllers/ContactController');
+
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many contact requests. Please try again shortly.',
+});
 
 function normalizeWebsiteUrl(value) {
   const trimmed = String(value || '').trim();
@@ -23,6 +32,7 @@ router.get('/', ContactController.page);
 // Submit contact form (POST)
 router.post(
   '/',
+  contactLimiter,
   [
     body('name')
       .trim()

@@ -1,7 +1,7 @@
 const { BlogPost, User } = require('../models');
 const { Op } = require('sequelize');
 const bcryptjs = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+const sanitizeHtml = require('sanitize-html');
 const fs = require('fs');
 const path = require('path');
 
@@ -233,6 +233,76 @@ function parseTags(value) {
     .split(separator)
     .map((tag) => tag.trim())
     .filter(Boolean));
+}
+
+function sanitizePlainText(value, maxLength = 5000) {
+  return String(value || '')
+    .replace(/\u0000/g, '')
+    .trim()
+    .slice(0, maxLength);
+}
+
+function sanitizeArticleContent(value) {
+  return sanitizeHtml(String(value || ''), {
+    allowedTags: [
+      'p',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'pre',
+      'code',
+      'strong',
+      'em',
+      'u',
+      'a',
+      'br',
+      'hr',
+      'img',
+    ],
+    allowedAttributes: {
+      a: ['href', 'name', 'target', 'rel'],
+      img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+      '*': ['class'],
+    },
+    allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+    allowedSchemesByTag: {
+      img: ['http', 'https', 'data'],
+    },
+    transformTags: {
+      a: (tagName, attribs) => {
+        const normalized = { ...attribs };
+        if (normalized.target === '_blank') {
+          normalized.rel = 'noopener noreferrer';
+        }
+        return { tagName, attribs: normalized };
+      },
+      img: (tagName, attribs) => {
+        const normalized = { ...attribs, loading: attribs.loading || 'lazy' };
+        return { tagName, attribs: normalized };
+      },
+    },
+  });
+}
+
+function sanitizeArticlePayload(payload = {}) {
+  return {
+    title: sanitizePlainText(payload.title, 255),
+    slug: slugify(payload.slug),
+    excerpt: sanitizePlainText(payload.excerpt, 2000),
+    content: sanitizeArticleContent(payload.content),
+    category: normalizeCategory(payload.category),
+    tags: Array.isArray(payload.tags) ? uniqueTags(payload.tags) : parseArticleTags(payload.tags),
+    seoTitle: sanitizePlainText(payload.seoTitle, 255),
+    metaDescription: sanitizePlainText(payload.metaDescription, 255),
+    keywords: sanitizePlainText(payload.keywords, 255),
+  };
 }
 
 function toDateOrNull(value) {
@@ -935,16 +1005,28 @@ class AdminController {
 
         const publishDateFromCsv = toDateOrNull(rowObject.publishDate);
         const isPublished = parseBool(rowObject.published);
-        const articlePayload = {
+        const sanitized = sanitizeArticlePayload({
           title,
           slug,
           excerpt,
           content,
-          category: normalizeCategory(rowObject.category),
+          category: rowObject.category,
           tags: parseTags(rowObject.tags),
           seoTitle: rowObject.seoTitle || title,
           metaDescription: rowObject.metaDescription || excerpt,
           keywords: rowObject.keywords || null,
+        });
+
+        const articlePayload = {
+          title: sanitized.title,
+          slug: sanitized.slug,
+          excerpt: sanitized.excerpt,
+          content: sanitized.content,
+          category: sanitized.category,
+          tags: sanitized.tags,
+          seoTitle: sanitized.seoTitle || sanitized.title,
+          metaDescription: sanitized.metaDescription || sanitized.excerpt,
+          keywords: sanitized.keywords || null,
           published: isPublished,
           publishDate: isPublished ? publishDateFromCsv || new Date() : null,
         };
@@ -1027,17 +1109,18 @@ class AdminController {
   // Create article
   static async createArticle(req, res, next) {
     try {
-      const { title, slug, excerpt, content } = req.body;
+      const sanitized = sanitizeArticlePayload(req.body);
+      const { title, slug, excerpt, content } = sanitized;
       const formData = {
-        title: req.body.title || '',
-        slug: req.body.slug || '',
-        excerpt: req.body.excerpt || '',
-        content: req.body.content || '',
-        category: req.body.category || '',
-        tags: req.body.tags || '',
-        seoTitle: req.body.seoTitle || '',
-        metaDescription: req.body.metaDescription || '',
-        keywords: req.body.keywords || '',
+        title,
+        slug,
+        excerpt,
+        content,
+        category: sanitized.category,
+        tags: sanitized.tags.join(', '),
+        seoTitle: sanitized.seoTitle,
+        metaDescription: sanitized.metaDescription,
+        keywords: sanitized.keywords,
         published: req.body.published === 'on' ? 'on' : '',
       };
 
@@ -1056,11 +1139,11 @@ class AdminController {
         excerpt,
         content,
         featuredImage: resolveFeaturedImage(req),
-        category: normalizeCategory(req.body.category),
-        tags: parseArticleTags(req.body.tags),
-        seoTitle: req.body.seoTitle || title,
-        metaDescription: req.body.metaDescription || excerpt,
-        keywords: req.body.keywords || null,
+        category: sanitized.category,
+        tags: sanitized.tags,
+        seoTitle: sanitized.seoTitle || title,
+        metaDescription: sanitized.metaDescription || excerpt,
+        keywords: sanitized.keywords || null,
         published: req.body.published === 'on',
         publishDate: req.body.published === 'on' ? new Date() : null,
         authorId: req.session.user.id,
@@ -1134,17 +1217,18 @@ class AdminController {
   static async updateArticle(req, res, next) {
     try {
       const { id } = req.params;
-      const { title, slug, excerpt, content, category, tags, seoTitle, metaDescription, keywords, published } = req.body;
+      const sanitized = sanitizeArticlePayload(req.body);
+      const { title, slug, excerpt, content } = sanitized;
       const formData = {
-        title: req.body.title || '',
-        slug: req.body.slug || '',
-        excerpt: req.body.excerpt || '',
-        content: req.body.content || '',
-        category: req.body.category || '',
-        tags: req.body.tags || '',
-        seoTitle: req.body.seoTitle || '',
-        metaDescription: req.body.metaDescription || '',
-        keywords: req.body.keywords || '',
+        title,
+        slug,
+        excerpt,
+        content,
+        category: sanitized.category,
+        tags: sanitized.tags.join(', '),
+        seoTitle: sanitized.seoTitle,
+        metaDescription: sanitized.metaDescription,
+        keywords: sanitized.keywords,
         published: req.body.published === 'on' ? 'on' : '',
       };
 
@@ -1172,11 +1256,11 @@ class AdminController {
         excerpt,
         content,
         featuredImage,
-        category: normalizeCategory(req.body.category),
-        tags: parseArticleTags(req.body.tags),
-        seoTitle: req.body.seoTitle || title,
-        metaDescription: req.body.metaDescription || excerpt,
-        keywords: req.body.keywords || null,
+        category: sanitized.category,
+        tags: sanitized.tags,
+        seoTitle: sanitized.seoTitle || title,
+        metaDescription: sanitized.metaDescription || excerpt,
+        keywords: sanitized.keywords || null,
         published: req.body.published === 'on',
         publishDate: req.body.published === 'on' && !article.publishDate ? new Date() : article.publishDate,
       });
@@ -1476,13 +1560,38 @@ class AdminController {
   static async createUser(req, res, next) {
     try {
       const { name, email, password, role } = req.body;
+      const normalizedName = sanitizePlainText(name, 255);
+      const normalizedEmail = String(email || '').trim().toLowerCase();
+      const normalizedRole = role === 'superadmin' ? 'superadmin' : 'admin';
+
+      const errors = [];
+      if (normalizedName.length < 2) {
+        errors.push({ field: 'name', message: 'Name must be at least 2 characters.' });
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+        errors.push({ field: 'email', message: 'Please provide a valid email address.' });
+      }
+
+      if (String(password || '').length < 12) {
+        errors.push({ field: 'password', message: 'Password must be at least 12 characters.' });
+      }
+
+      if (errors.length) {
+        return res.status(400).render('admin/user-form', {
+          title: 'Create New User',
+          user: { name: normalizedName, email: normalizedEmail, role: normalizedRole },
+          isNew: true,
+          errors,
+        });
+      }
 
       // Check if email exists
-      const existing = await User.findOne({ where: { email } });
+      const existing = await User.findOne({ where: { email: normalizedEmail } });
       if (existing) {
         return res.status(400).render('admin/user-form', {
           title: 'Create New User',
-          user: null,
+          user: { name: normalizedName, email: normalizedEmail, role: normalizedRole },
           isNew: true,
           errors: [{ field: 'email', message: 'Email already in use' }],
         });
@@ -1492,10 +1601,10 @@ class AdminController {
       const hashedPassword = await bcryptjs.hash(password, 10);
 
       await User.create({
-        name,
-        email,
+        name: normalizedName,
+        email: normalizedEmail,
         password: hashedPassword,
-        role: role || 'admin',
+        role: normalizedRole,
       });
 
       req.session.success = 'User created successfully!';

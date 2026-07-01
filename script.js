@@ -103,6 +103,16 @@
       });
     }
 
+    form.addEventListener('submit', function () {
+      form.classList.add('is-loading');
+      form.setAttribute('aria-busy', 'true');
+      var submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.classList.add('is-loading');
+        submitButton.setAttribute('aria-disabled', 'true');
+      }
+    });
+
     // If redirected with a contact feedback anchor, keep focus on feedback
     // but clean query/hash so refresh or share links stay tidy.
     var feedback = form.querySelector('.form__feedback');

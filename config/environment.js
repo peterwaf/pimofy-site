@@ -23,7 +23,7 @@ const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {
   console.error(`❌ Missing required environment variables: ${missingEnvVars.join(', ')}`);
-  console.error('Please copy .env.example to .env and fill in the values.');
+  console.error('Please set the required values in your local .env file.');
   process.exit(1);
 }
 

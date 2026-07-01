@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%= csrfToken %>" />
     <title><%= typeof title !== 'undefined' ? title + ' | Pimofy Admin' : 'Pimofy Admin' %></title>
     <meta name="description" content="Admin console for Pimofy Digital content and operations" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -41,10 +42,13 @@
                 <span aria-hidden="true">↗</span>
               </a>
               <% if (user) { %>
-                <a href="/auth/logout" class="btn btn--primary admin-topbar__button">
-                  <span>Logout</span>
-                  <span aria-hidden="true">→</span>
-                </a>
+                <form method="POST" action="/auth/logout" class="admin-topbar__logout-form">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <button type="submit" class="btn btn--primary admin-topbar__button">
+                    <span>Logout</span>
+                    <span aria-hidden="true">→</span>
+                  </button>
+                </form>
               <% } %>
             </div>
             <div class="admin-topbar__user">

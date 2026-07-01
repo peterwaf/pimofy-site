@@ -41,6 +41,7 @@
                 <td>
                   <% if (u.active) { %>
                     <form method="POST" action="/admin/users/<%= u.id %>/disable" onsubmit="return confirm('Disable this user?');">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                       <button type="submit" class="btn btn--ghost">Disable</button>
                     </form>
                   <% } %>

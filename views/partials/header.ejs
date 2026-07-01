@@ -23,7 +23,12 @@
         <li class="nav__mobile-cta"><a href="/contact" class="btn btn--primary">Book a Call</a></li>
         <% if (user) { %>
           <li><a href="/admin">Admin</a></li>
-          <li><a href="/auth/logout">Logout</a></li>
+          <li>
+            <form method="POST" action="/auth/logout" class="nav__logout-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <button type="submit" class="nav__logout-button">Logout</button>
+            </form>
+          </li>
         <% } %>
       </ul>
       <div class="nav__actions">

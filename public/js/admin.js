@@ -479,6 +479,52 @@
   var mediaUploadForm = document.querySelector('[data-media-upload-form]');
   var mediaUploadInput = document.querySelector('[data-media-upload-input]');
   var mediaUploadPreview = document.querySelector('[data-media-upload-preview]');
+  var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  var csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+  function setFormLoading(form, isLoading, loadingLabel) {
+    if (!form) {
+      return;
+    }
+
+    var submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+    form.classList.toggle('is-loading', Boolean(isLoading));
+    form.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+
+    submitButtons.forEach(function (button) {
+      if (isLoading) {
+        if (!button.getAttribute('data-original-text')) {
+          button.setAttribute('data-original-text', button.textContent);
+        }
+        if (loadingLabel) {
+          button.textContent = loadingLabel;
+        }
+        button.disabled = true;
+        button.classList.add('is-loading');
+        return;
+      }
+
+      if (button.getAttribute('data-original-text')) {
+        button.textContent = button.getAttribute('data-original-text');
+        button.removeAttribute('data-original-text');
+      }
+      button.disabled = false;
+      button.classList.remove('is-loading');
+    });
+  }
+
+  document.addEventListener('submit', function (event) {
+    var targetForm = event.target;
+    if (!(targetForm instanceof HTMLFormElement)) {
+      return;
+    }
+
+    if (targetForm.hasAttribute('data-loading-disabled')) {
+      return;
+    }
+
+    setFormLoading(targetForm, true, targetForm.getAttribute('data-loading-label') || 'Saving...');
+  }, true);
 
   if (mediaUploadInput && mediaUploadPreview) {
     mediaUploadInput.addEventListener('change', function () {
@@ -489,12 +535,16 @@
   if (mediaUploadForm && window.FormData && window.fetch) {
     mediaUploadForm.addEventListener('submit', function (event) {
       event.preventDefault();
+      setFormLoading(mediaUploadForm, true, 'Uploading...');
 
       var formData = new FormData(mediaUploadForm);
       fetch(mediaUploadForm.action, {
         method: 'POST',
         body: formData,
-        headers: { Accept: 'application/json' },
+        headers: {
+          Accept: 'application/json',
+          'x-csrf-token': csrfToken,
+        },
       })
         .then(function (response) {
           return response.json().then(function (payload) {
@@ -530,6 +580,9 @@
             errorBox.textContent = error.message;
             errorBox.classList.add('show');
           }
+        })
+        .finally(function () {
+          setFormLoading(mediaUploadForm, false);
         });
     });
   }

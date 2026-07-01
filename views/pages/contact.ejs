@@ -69,6 +69,7 @@
               <h2 style="font-size:1.5rem;margin-bottom:6px;">Book Your Free Call</h2>
               <p style="color:var(--muted);margin-bottom:20px;">Prefer email? Send the details below and we&rsquo;ll be in touch.</p>
               <form class="form" id="contact-form" method="POST" action="/contact" novalidate>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <div class="form__row">
                   <div class="field"><label for="name">Full name *</label><input id="name" name="name" type="text" required autocomplete="name" value="<%= formData.name || '' %>" /></div>
                   <div class="field"><label for="email">Work email *</label><input id="email" name="email" type="email" required autocomplete="email" value="<%= formData.email || '' %>" /></div>

@@ -129,6 +129,9 @@
                 <span>Updated <%= new Date(article.updatedAt || article.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
               </div>
               <div class="admin-article-item__actions">
+                <% if (article.slug) { %>
+                  <a href="/blog/<%= article.slug %>" class="btn btn--ghost" target="_blank" rel="noopener">View</a>
+                <% } %>
                 <a href="/admin/articles/<%= article.id %>/edit" class="btn btn--ghost">Edit</a>
               </div>
             </article>

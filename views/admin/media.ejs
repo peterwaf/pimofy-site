@@ -16,6 +16,7 @@
 
       <div class="card media-upload-card" style="margin-bottom: 20px;">
         <form action="/admin/media/upload" method="POST" enctype="multipart/form-data" class="form" data-media-upload-form>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
           <input type="hidden" name="returnTo" value="<%= mediaReturnTo || '' %>" />
           <div class="field">
             <label for="mediaFile">Choose file</label>
@@ -102,6 +103,7 @@
 
                 <div class="media-card__edit" hidden>
                   <form method="POST" action="/admin/media/<%= encodeURIComponent(media.filename) %>/update" class="media-card__edit-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <input type="hidden" name="returnTo" value="<%= mediaReturnTo || '' %>" />
                     <label for="media-name-<%= media.filename.replace(/[^a-zA-Z0-9]/g, '-') %>">Filename</label>
                     <input
@@ -118,6 +120,7 @@
                   </form>
 
                   <form method="POST" action="/admin/media/<%= encodeURIComponent(media.filename) %>/delete" data-confirm-delete data-confirm-title="<%= media.filename %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <input type="hidden" name="returnTo" value="<%= mediaReturnTo || '' %>" />
                     <button type="submit" class="btn btn--ghost media-card__delete">Delete Media</button>
                   </form>
