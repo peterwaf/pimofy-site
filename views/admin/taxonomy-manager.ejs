@@ -1,0 +1,136 @@
+<div class="admin-page taxonomy-page taxonomy-manager">
+  <section>
+    <div>
+      <div class="admin-section-head taxonomy-section-head">
+        <div>
+          <p class="admin-topbar__eyebrow">Taxonomy workspace</p>
+          <p>
+            <% if (taxonomySection === 'categories') { %>
+              Create, rename, and delete categories. Removing a category moves related articles to Uncategorized.
+            <% } else { %>
+              Create, rename, and delete tags. Removing a tag also removes it from related articles.
+            <% } %>
+          </p>
+        </div>
+        <div class="taxonomy-switcher">
+          <a href="/admin/taxonomy/categories" class="btn <%= taxonomySection === 'categories' ? 'btn--primary' : 'btn--ghost' %>">Categories</a>
+          <a href="/admin/taxonomy/tags" class="btn <%= taxonomySection === 'tags' ? 'btn--primary' : 'btn--ghost' %>">Tags</a>
+        </div>
+      </div>
+
+      <div id="taxonomy-feedback-anchor" class="anchor-offset"></div>
+      <div class="form__feedback" aria-live="polite" tabindex="-1">
+        <div class="form__success<% if (taxonomyMessage) { %> show<% } %>"><%= taxonomyMessage || '' %></div>
+        <% if (taxonomyError) { %>
+          <div class="form__error show"><%= taxonomyError %></div>
+        <% } %>
+      </div>
+
+      <% if (taxonomySection === 'categories') { %>
+        <div class="card taxonomy-card">
+          <h3 class="spacing-sm-b">Categories</h3>
+          <form method="POST" action="/admin/taxonomy/categories" class="form taxonomy-create-form">
+            <div class="field">
+              <label for="newCategory">Create category</label>
+              <input id="newCategory" name="name" type="text" required placeholder="Example: Operations" />
+            </div>
+            <button type="submit" class="btn btn--primary">Create Category</button>
+          </form>
+
+          <div class="table-wrap taxonomy-table-wrap">
+            <table class="table-clean taxonomy-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Articles</th>
+                  <th>Rename</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!categories || categories.length === 0) { %>
+                  <tr>
+                    <td colspan="4" class="cell-muted">No categories found.</td>
+                  </tr>
+                <% } %>
+                <% (categories || []).forEach((category) => { %>
+                  <tr>
+                    <td><strong><%= category.name %></strong></td>
+                    <td><%= category.count %></td>
+                    <td>
+                      <% if (category.name !== 'Uncategorized') { %>
+                        <form method="POST" action="/admin/taxonomy/categories/<%= encodeURIComponent(category.name) %>/rename" class="actions-row taxonomy-term-actions">
+                          <input name="newName" type="text" required value="<%= category.name %>" class="input-min-160" />
+                          <button type="submit" class="btn btn--ghost">Rename</button>
+                        </form>
+                      <% } else { %>
+                        <span class="cell-muted">Default category</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <% if (category.name !== 'Uncategorized') { %>
+                        <form method="POST" action="/admin/taxonomy/categories/<%= encodeURIComponent(category.name) %>/delete" class="taxonomy-delete-form" data-confirm-delete data-confirm-title="category: <%= category.name %>">
+                          <button type="submit" class="btn btn--ghost">Delete</button>
+                        </form>
+                      <% } else { %>
+                        <span class="cell-muted">Not allowed</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="card taxonomy-card">
+          <h3 class="spacing-sm-b">Tags</h3>
+          <form method="POST" action="/admin/taxonomy/tags" class="form taxonomy-create-form">
+            <div class="field">
+              <label for="newTag">Create tag</label>
+              <input id="newTag" name="name" type="text" required placeholder="Example: onboarding" />
+            </div>
+            <button type="submit" class="btn btn--primary">Create Tag</button>
+          </form>
+
+          <div class="table-wrap taxonomy-table-wrap">
+            <table class="table-clean taxonomy-table">
+              <thead>
+                <tr>
+                  <th>Tag</th>
+                  <th>Articles</th>
+                  <th>Rename</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!tags || tags.length === 0) { %>
+                  <tr>
+                    <td colspan="4" class="cell-muted">No tags found.</td>
+                  </tr>
+                <% } %>
+                <% (tags || []).forEach((tag) => { %>
+                  <tr>
+                    <td><strong><%= tag.name %></strong></td>
+                    <td><%= tag.count %></td>
+                    <td>
+                      <form method="POST" action="/admin/taxonomy/tags/<%= encodeURIComponent(tag.name) %>/rename" class="actions-row taxonomy-term-actions">
+                        <input name="newName" type="text" required value="<%= tag.name %>" class="input-min-160" />
+                        <button type="submit" class="btn btn--ghost">Rename</button>
+                      </form>
+                    </td>
+                    <td>
+                      <form method="POST" action="/admin/taxonomy/tags/<%= encodeURIComponent(tag.name) %>/delete" class="taxonomy-delete-form" data-confirm-delete data-confirm-title="tag: <%= tag.name %>">
+                        <button type="submit" class="btn btn--ghost">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </section>
+</div>

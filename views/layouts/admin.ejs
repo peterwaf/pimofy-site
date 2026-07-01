@@ -15,17 +15,44 @@
     <a class="skip-link" href="#admin-main">Skip to content</a>
     <div class="admin-shell">
       <%- include('../partials/admin-nav') %>
+      <button type="button" class="admin-shell__backdrop" data-admin-nav-close aria-label="Close navigation"></button>
       <div class="admin-shell__content">
         <header class="admin-topbar">
           <div>
             <p class="admin-topbar__eyebrow">Admin console</p>
             <h1><%= typeof title !== 'undefined' ? title : 'Dashboard' %></h1>
           </div>
-          <div class="admin-topbar__user">
+          <div class="admin-topbar__actions">
+            <button
+              type="button"
+              class="admin-nav-toggle"
+              data-admin-nav-toggle
+              aria-expanded="false"
+              aria-controls="admin-sidebar"
+              aria-label="Open navigation"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <div class="admin-topbar__links">
+              <a href="/" class="btn btn--ghost admin-topbar__button">
+                <span>View site</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              <% if (user) { %>
+                <a href="/auth/logout" class="btn btn--primary admin-topbar__button">
+                  <span>Logout</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              <% } %>
+            </div>
+            <div class="admin-topbar__user">
             <% if (user) { %>
               <span><strong><%= user.name %></strong></span>
               <span><%= user.role %></span>
             <% } %>
+            </div>
           </div>
         </header>
         <main id="admin-main" class="admin-main">

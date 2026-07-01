@@ -6,7 +6,7 @@
 <main id="main">
 <!-- HERO -->
 <section class="hero">
-  <div class="container text-center reveal" style="max-width:780px;">
+  <div class="container text-center reveal max-w-780">
     <span class="eyebrow">Resources</span>
     <h1>Operations Insights & Resources</h1>
     <p class="lead">Practical thinking on data operations, capacity, and scaling without the overhead — for SaaS and Ecommerce leaders.</p>
@@ -16,11 +16,11 @@
 <!-- FEATURED -->
 <section class="section section--soft">
   <div class="container reveal">
-    <div class="callout" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;text-align:left;">
-      <div style="flex:1;min-width:260px;">
+    <div class="callout callout--featured">
+      <div class="callout--featured-content">
         <span class="tag">Featured</span>
-        <h2 style="margin:6px 0 8px;">Free Operations Capacity Audit™</h2>
-        <p style="margin:0;">Find out exactly where your team is losing time to repetitive data work — in under 30 minutes, at no cost.</p>
+        <h2>Free Operations Capacity Audit™</h2>
+        <p>Find out exactly where your team is losing time to repetitive data work — in under 30 minutes, at no cost.</p>
       </div>
       <a href="/contact" class="btn btn--primary btn--lg">Book Your Free Audit</a>
     </div>
@@ -37,7 +37,7 @@
         <a class="card article reveal" <% if (index > 0) { %>data-delay="<%= Math.min(index, 2) %>"<% } %> href="/blog/<%= post.slug %>">
           <div class="article__thumb">
             <img class="article__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" />
-            <span class="tag tag--overlay"><%= post.category %></span>
+            <span class="tag tag--overlay"><%= post.category || 'Uncategorized' %></span>
           </div>
           <div class="article__body">
             <h3><%= post.title %></h3>
@@ -50,13 +50,13 @@
 
     <!-- Pagination -->
     <% if (totalPages > 1) { %>
-      <div style="display: flex; justify-content: center; gap: 10px; margin-top: 40px;">
+      <div class="actions-row actions-row--center mt-40">
         <% if (currentPage > 1) { %>
           <a href="/blog?page=1" class="btn btn--ghost">First</a>
           <a href="/blog?page=<%= currentPage - 1 %>" class="btn btn--ghost">Previous</a>
         <% } %>
         
-        <span style="padding: 12px 16px; font-weight: 600;">Page <%= currentPage %> of <%= totalPages %></span>
+        <span class="pagination-pill">Page <%= currentPage %> of <%= totalPages %></span>
         
         <% if (currentPage < totalPages) { %>
           <a href="/blog?page=<%= currentPage + 1 %>" class="btn btn--ghost">Next</a>

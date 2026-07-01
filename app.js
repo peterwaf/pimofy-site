@@ -1,10 +1,12 @@
 const express = require('express');
 const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const config = require('./config/environment');
+const { sequelize } = require('./models');
 
 // Create Express app
 const app = express();
@@ -41,9 +43,17 @@ app.use(express.json());
 // ============================================
 // SESSION CONFIGURATION
 // ============================================
+const sessionStore = new SequelizeStore({
+  db: sequelize,
+  tableName: 'sessions',
+  checkExpirationInterval: 15 * 60 * 1000,
+  expiration: 24 * 60 * 60 * 1000,
+});
+
 app.use(
   session({
     secret: config.session.secret,
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -53,6 +63,8 @@ app.use(
     },
   })
 );
+
+app.locals.sessionStore = sessionStore;
 
 // ============================================
 // STATIC FILES

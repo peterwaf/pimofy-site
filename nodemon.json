@@ -1,0 +1,5 @@
+{
+  "watch": ["server.js", "app.js", "routes", "controllers", "models", "middleware", "views", "config"],
+  "ignore": ["config/taxonomy.json"],
+  "ext": "js,json,ejs"
+}

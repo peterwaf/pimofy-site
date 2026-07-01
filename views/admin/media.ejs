@@ -3,7 +3,7 @@
     <div>
       <div class="admin-page__header">
         <h2>Media Library</h2>
-        <p>Upload images, preview them before publishing, and review existing assets in one place.</p>
+        <p>Upload, review, rename, copy, and remove assets from one organized workspace built for publishing teams.</p>
       </div>
 
       <div id="media-feedback-anchor" style="scroll-margin-top: 120px;"></div>
@@ -14,8 +14,9 @@
         <% } %>
       </div>
 
-      <div class="card" style="margin-bottom: 20px;">
+      <div class="card media-upload-card" style="margin-bottom: 20px;">
         <form action="/admin/media/upload" method="POST" enctype="multipart/form-data" class="form" data-media-upload-form>
+          <input type="hidden" name="returnTo" value="<%= mediaReturnTo || '' %>" />
           <div class="field">
             <label for="mediaFile">Choose file</label>
             <input id="mediaFile" type="file" name="file" accept="image/*" required data-media-upload-input />
@@ -23,26 +24,133 @@
           <div class="media-preview" data-media-upload-preview>
             <span>Select a file to preview it before upload.</span>
           </div>
-          <button type="submit" class="btn btn--primary">Upload</button>
+          <div class="media-upload-card__actions">
+            <button type="submit" class="btn btn--primary">Upload Media</button>
+            <p>Supported formats: JPG, PNG, WebP, GIF, SVG. Max size: 10MB.</p>
+          </div>
         </form>
       </div>
 
       <div class="card">
-        <h2 style="margin-bottom: 10px;">Uploads</h2>
-        <p style="color: var(--muted);">Click any asset to preview it full size.</p>
+        <div class="media-library__head">
+          <div>
+            <h2>All Media</h2>
+            <p>Preview any item, copy its URL, rename the file, or remove it when no longer needed.</p>
+          </div>
+          <span class="media-library__count"><%= mediaPagination ? mediaPagination.totalItems : (mediaFiles || []).length %> assets</span>
+        </div>
 
-        <div class="media-grid">
+        <form method="GET" action="/admin/media" class="media-filters">
+          <div class="field media-filters__search">
+            <label for="media-q">Search</label>
+            <input id="media-q" name="q" type="text" value="<%= mediaFilters ? mediaFilters.q : '' %>" placeholder="Search by filename" />
+          </div>
+
+          <div class="field media-filters__sort">
+            <label for="media-sort">Sort</label>
+            <select id="media-sort" name="sort">
+              <option value="updated_desc" <%= mediaFilters && mediaFilters.sort === 'updated_desc' ? 'selected' : '' %>>Recently updated</option>
+              <option value="updated_asc" <%= mediaFilters && mediaFilters.sort === 'updated_asc' ? 'selected' : '' %>>Oldest updates</option>
+              <option value="name_asc" <%= mediaFilters && mediaFilters.sort === 'name_asc' ? 'selected' : '' %>>Name (A-Z)</option>
+              <option value="name_desc" <%= mediaFilters && mediaFilters.sort === 'name_desc' ? 'selected' : '' %>>Name (Z-A)</option>
+              <option value="size_desc" <%= mediaFilters && mediaFilters.sort === 'size_desc' ? 'selected' : '' %>>Size (Largest first)</option>
+              <option value="size_asc" <%= mediaFilters && mediaFilters.sort === 'size_asc' ? 'selected' : '' %>>Size (Smallest first)</option>
+            </select>
+          </div>
+
+          <div class="field media-filters__per-page">
+            <label for="media-per-page">Per page</label>
+            <select id="media-per-page" name="perPage">
+              <option value="6" <%= mediaFilters && mediaFilters.perPage === 6 ? 'selected' : '' %>>6</option>
+              <option value="12" <%= !mediaFilters || mediaFilters.perPage === 12 ? 'selected' : '' %>>12</option>
+              <option value="24" <%= mediaFilters && mediaFilters.perPage === 24 ? 'selected' : '' %>>24</option>
+              <option value="48" <%= mediaFilters && mediaFilters.perPage === 48 ? 'selected' : '' %>>48</option>
+            </select>
+          </div>
+
+          <div class="media-filters__actions">
+            <button type="submit" class="btn btn--primary">Apply</button>
+            <a href="/admin/media" class="btn btn--ghost">Reset</a>
+          </div>
+        </form>
+
+        <div class="media-grid media-grid--library">
           <% if (!mediaFiles || mediaFiles.length === 0) { %>
-            <p style="color: var(--muted); margin: 0;">No uploaded images yet.</p>
+            <div class="media-empty-state">
+              <p>No uploaded images yet. Add your first media asset to start building content faster.</p>
+            </div>
           <% } %>
 
           <% (mediaFiles || []).forEach((media) => { %>
-            <button type="button" class="media-card" data-media-preview-src="<%= media.url %>" data-media-preview-alt="<%= media.filename %>">
-              <img src="<%= media.url %>" alt="<%= media.filename %>" />
-              <span><%= media.filename %></span>
-            </button>
+            <article class="media-card media-card--library">
+              <button type="button" class="media-card__preview" data-media-preview-src="<%= media.url %>" data-media-preview-alt="<%= media.filename %>">
+                <img src="<%= media.url %>" alt="<%= media.filename %>" />
+              </button>
+
+              <div class="media-card__body">
+                <h3 title="<%= media.filename %>"><%= media.filename %></h3>
+                <div class="media-card__meta">
+                  <span><%= (media.size / 1024).toFixed(1) %> KB</span>
+                  <span>Updated <%= new Date(media.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                </div>
+
+                <div class="media-card__actions">
+                  <button type="button" class="btn btn--ghost" data-media-preview-src="<%= media.url %>" data-media-preview-alt="<%= media.filename %>">Preview</button>
+                  <button type="button" class="btn btn--ghost" data-copy-media-url="<%= media.url %>">Copy URL</button>
+                  <button type="button" class="btn btn--ghost" data-media-toggle-edit>Rename</button>
+                </div>
+
+                <div class="media-card__edit" hidden>
+                  <form method="POST" action="/admin/media/<%= encodeURIComponent(media.filename) %>/update" class="media-card__edit-form">
+                    <input type="hidden" name="returnTo" value="<%= mediaReturnTo || '' %>" />
+                    <label for="media-name-<%= media.filename.replace(/[^a-zA-Z0-9]/g, '-') %>">Filename</label>
+                    <input
+                      id="media-name-<%= media.filename.replace(/[^a-zA-Z0-9]/g, '-') %>"
+                      name="filename"
+                      type="text"
+                      value="<%= media.filename %>"
+                      required
+                    />
+                    <div class="media-card__edit-actions">
+                      <button type="submit" class="btn btn--primary">Save</button>
+                      <button type="button" class="btn btn--ghost" data-media-cancel-edit>Cancel</button>
+                    </div>
+                  </form>
+
+                  <form method="POST" action="/admin/media/<%= encodeURIComponent(media.filename) %>/delete" data-confirm-delete data-confirm-title="<%= media.filename %>">
+                    <input type="hidden" name="returnTo" value="<%= mediaReturnTo || '' %>" />
+                    <button type="submit" class="btn btn--ghost media-card__delete">Delete Media</button>
+                  </form>
+                </div>
+              </div>
+            </article>
           <% }); %>
         </div>
+
+        <% if (mediaPagination) { %>
+          <div class="media-pagination">
+            <p>
+              Showing <strong><%= mediaPagination.rangeStart %></strong>-<strong><%= mediaPagination.rangeEnd %></strong>
+              of <strong><%= mediaPagination.totalItems %></strong> assets
+            </p>
+
+            <% if (mediaPagination.totalPages > 1) { %>
+              <nav class="media-pagination__controls" aria-label="Media pages">
+                <% if (mediaPagination.prevUrl) { %>
+                  <a href="<%= mediaPagination.prevUrl %>" class="btn btn--ghost">Previous</a>
+                <% } %>
+
+                <% mediaPagination.pageLinks.forEach((pageLink) => { %>
+                  <a href="<%= pageLink.url %>" class="btn btn--ghost<%= pageLink.active ? ' is-active' : '' %>" <%= pageLink.active ? 'aria-current="page"' : '' %>><%= pageLink.number %></a>
+                <% }); %>
+
+                <% if (mediaPagination.nextUrl) { %>
+                  <a href="<%= mediaPagination.nextUrl %>" class="btn btn--ghost">Next</a>
+                <% } %>
+              </nav>
+            <% } %>
+          </div>
+        <% } %>
       </div>
 
       <div class="media-modal" data-media-modal aria-hidden="true">

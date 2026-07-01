@@ -1,100 +1,162 @@
 <div class="admin-page">
-<div class="admin-grid admin-grid--dashboard">
-  <section class="admin-welcome card reveal">
-    <div class="admin-welcome__copy">
-      <span class="eyebrow">Admin workspace</span>
-      <h1>Welcome back, <%= user.name %>.</h1>
-      <p>Your content and media operations are ready. Use the shortcuts below to create an article, review uploads, or manage users.</p>
-      <div class="admin-welcome__actions">
-        <a href="/admin/articles/new" class="btn btn--primary">New Article</a>
-        <a href="/admin/media" class="btn btn--ghost">Open Media Library</a>
+  <div class="admin-grid admin-grid--dashboard">
+    <% const publishRate = totalArticles ? Math.round((publishedArticles / totalArticles) * 100) : 0; %>
+
+    <section class="admin-welcome card reveal">
+      <div class="admin-welcome__copy">
+        <span class="eyebrow">Admin workspace</span>
+        <h1>Welcome back, <%= user.name %>.</h1>
+        <p>Your publishing workspace is live. Use this dashboard to spot what needs attention, create updates quickly, and keep content quality consistent across articles, media, and taxonomy.</p>
+        <ul class="admin-welcome__list">
+          <li>Draft and publish articles with SEO details and featured media.</li>
+          <li>Keep media and taxonomy organized before content grows messy.</li>
+          <li>Monitor draft volume and publishing pace at a glance.</li>
+          <% if (user.role === 'superadmin') { %>
+            <li>Manage admin users and permissions for safe collaboration.</li>
+          <% } %>
+        </ul>
+        <div class="admin-welcome__actions">
+          <a href="/admin/articles/new" class="btn btn--primary">New Article</a>
+          <a href="/admin/media" class="btn btn--ghost">Open Media Library</a>
+          <a href="/admin/taxonomy" class="btn btn--ghost">Manage Taxonomies</a>
+        </div>
+      </div>
+
+      <div class="admin-welcome__panel">
+        <div>
+          <strong>Content Pulse</strong>
+          <p><%= publishRate %>% of your article library is currently published.</p>
+        </div>
+        <div class="admin-pulse">
+          <div class="admin-pulse__track" aria-hidden="true">
+            <span class="admin-pulse__fill" style="width: <%= publishRate %>%;"></span>
+          </div>
+          <div class="admin-welcome__stats">
+            <span><strong><%= totalArticles %></strong> Articles</span>
+            <span><strong><%= draftArticles %></strong> Need review</span>
+            <span><strong><%= totalUsers %></strong> Team members</span>
+          </div>
+          <div class="admin-pulse__meta">
+            <span><strong><%= publishedArticles %></strong> published</span>
+            <span><strong><%= draftArticles %></strong> draft</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="admin-kpi-grid pagination-row">
+      <article class="card reveal admin-kpi-card">
+        <div class="admin-kpi-card__meta">
+          <span class="eyebrow">Library</span>
+          <div class="stat__num stat__num--blue"><%= totalArticles %></div>
+        </div>
+        <h3>Total Articles</h3>
+        <p>All published and draft content currently managed from the dashboard.</p>
+      </article>
+
+      <article class="card reveal admin-kpi-card" data-delay="1">
+        <div class="admin-kpi-card__meta">
+          <span class="eyebrow">Live</span>
+          <div class="stat__num stat__num--green"><%= publishedArticles %></div>
+        </div>
+        <h3>Published</h3>
+        <p>Content that is already visible on the public site and contributing value.</p>
+      </article>
+
+      <article class="card reveal admin-kpi-card" data-delay="2">
+        <div class="admin-kpi-card__meta">
+          <span class="eyebrow">Pending</span>
+          <div class="stat__num stat__num--orange"><%= draftArticles %></div>
+        </div>
+        <h3>Drafts</h3>
+        <p>Items waiting for review, SEO cleanup, or final publishing decisions.</p>
+      </article>
+
+      <article class="card reveal admin-kpi-card" data-delay="3">
+        <div class="admin-kpi-card__meta">
+          <span class="eyebrow">Team</span>
+          <div class="stat__num stat__num--purple"><%= totalUsers %></div>
+        </div>
+        <h3>Users</h3>
+        <p>Admin accounts with access to content, media, and site operations.</p>
+      </article>
+    </div>
+
+    <div class="admin-action-grid pagination-row">
+      <div class="card card--feature reveal admin-action-card">
+        <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <h3>Create Article</h3>
+        <p>Start a new post, add structured content, and prepare it for publishing.</p>
+        <a href="/admin/articles/new" class="link">Create article →</a>
+      </div>
+
+      <div class="card card--feature reveal admin-action-card" data-delay="1">
+        <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+        <h3>Manage Media</h3>
+        <p>Upload, rename, and reuse images so every article has the right visual support.</p>
+        <a href="/admin/media" class="link">Open media →</a>
+      </div>
+
+      <div class="card card--feature reveal admin-action-card" data-delay="2">
+        <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h10"/></svg></div>
+        <h3>Clean Taxonomy</h3>
+        <p>Keep categories and tags consistent so navigation and discovery stay clear.</p>
+        <a href="/admin/taxonomy" class="link">Open taxonomies →</a>
       </div>
     </div>
-    <div class="admin-welcome__panel">
+
+    <div class="admin-section-head pagination-row">
       <div>
-        <strong>Today</strong>
-        <p>Keep your article queue moving and preview media before publishing.</p>
+        <h2>Recent Articles</h2>
+        <p>Jump back into the latest content updates and keep momentum on drafts.</p>
       </div>
-      <div class="admin-welcome__stats">
-        <span><strong><%= totalArticles %></strong> Articles</span>
-        <span><strong><%= draftArticles %></strong> Drafts</span>
-        <span><strong><%= totalUsers %></strong> Users</span>
+      <a href="/admin/articles" class="btn btn--ghost">View all articles</a>
+    </div>
+
+    <div class="card reveal admin-recent-articles">
+      <% if (recentArticles && recentArticles.length) { %>
+        <div class="admin-recent-articles__list">
+          <% recentArticles.forEach((article, index) => { %>
+            <article class="admin-article-item reveal" data-delay="<%= index %>">
+              <div class="admin-article-item__main">
+                <h3><a href="/admin/articles/<%= article.id %>/edit"><%= article.title %></a></h3>
+                <p><%= article.excerpt ? article.excerpt.slice(0, 140) + (article.excerpt.length > 140 ? '...' : '') : 'No excerpt added yet.' %></p>
+              </div>
+              <div class="admin-article-item__meta">
+                <span class="admin-status <%= article.published ? 'admin-status--published' : 'admin-status--draft' %>"><%= article.published ? 'Published' : 'Draft' %></span>
+                <span><%= article.category || 'Uncategorized' %></span>
+                <span>By <strong><%= article.author ? article.author.name : 'Unknown' %></strong></span>
+                <span>Updated <%= new Date(article.updatedAt || article.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+              </div>
+              <div class="admin-article-item__actions">
+                <a href="/admin/articles/<%= article.id %>/edit" class="btn btn--ghost">Edit</a>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="admin-empty-state">
+          <p>No articles yet. Create your first post to get your publishing workflow started.</p>
+          <a href="/admin/articles/new" class="btn btn--primary">Create First Article</a>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (user.role === 'superadmin') { %>
+      <div class="card reveal pagination-row admin-admin-tools">
+        <div class="admin-section-head admin-section-head--inside">
+          <div>
+            <h2>Admin Tools</h2>
+            <p>Manage access and keep your internal workspace controlled.</p>
+          </div>
+        </div>
+        <div class="grid grid--2">
+          <a href="/admin/users" class="btn btn--ghost admin-tool-link">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="admin-tool-link__icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Manage Users
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Stats Grid -->
-  <div class="grid grid--4" style="margin-bottom: 40px;">
-    <div class="card reveal">
-      <div class="stat__num" style="color: var(--blue);"><%= totalArticles %></div>
-      <div class="stat__label">Total Articles</div>
-    </div>
-    <div class="card reveal" data-delay="1">
-      <div class="stat__num" style="color: var(--green, #22c55e);"><%= publishedArticles %></div>
-      <div class="stat__label">Published</div>
-    </div>
-    <div class="card reveal" data-delay="2">
-      <div class="stat__num" style="color: var(--orange);"><%= draftArticles %></div>
-      <div class="stat__label">Drafts</div>
-    </div>
-    <div class="card reveal" data-delay="3">
-      <div class="stat__num" style="color: var(--purple);"><%= totalUsers %></div>
-      <div class="stat__label">Users</div>
-    </div>
+    <% } %>
   </div>
-
-  <!-- Quick Actions -->
-  <div class="grid grid--2" style="margin-bottom: 40px;">
-    <div class="card card--feature reveal">
-      <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-      <h3>Create New Article</h3>
-      <p>Write and publish a new blog post to the resources page.</p>
-      <a href="/admin/articles/new" class="link">Create Article →</a>
-    </div>
-
-    <div class="card card--feature reveal" data-delay="1">
-      <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
-      <h3>Manage Media</h3>
-      <p>Upload images and manage your media library.</p>
-      <a href="/admin/media" class="link">Go to Media →</a>
-    </div>
-  </div>
-
-  <!-- Articles List -->
-  <div class="card reveal">
-    <h2 style="margin-bottom: 20px;">Recent Articles</h2>
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; font-size: 0.95rem;">
-        <thead>
-          <tr style="border-bottom: 2px solid var(--line);">
-            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Title</th>
-            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Status</th>
-            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Author</th>
-            <th style="text-align: left; padding: 12px 0; font-weight: 600;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Articles would be listed here -->
-          <tr style="border-bottom: 1px solid var(--line);">
-            <td colspan="4" style="text-align: center; padding: 20px; color: var(--muted);">
-              <a href="/admin/articles" style="color: var(--purple); font-weight: 600;">View all articles →</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <% if (user.role === 'superadmin') { %>
-    <div class="card reveal" style="margin-top: 20px;">
-      <h2 style="margin-bottom: 20px;">Admin Tools</h2>
-      <div class="grid grid--2">
-        <a href="/admin/users" class="btn btn--ghost" style="text-align: center; padding: 20px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 10px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Manage Users
-        </a>
-      </div>
-    </div>
-  <% } %>
-</div>
 </div>

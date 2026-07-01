@@ -13,6 +13,11 @@ async function startServer() {
     await sequelize.authenticate();
     console.log('✓ Database connection successful');
 
+    if (app.locals.sessionStore) {
+      await app.locals.sessionStore.sync();
+      console.log('✓ Session store ready');
+    }
+
     // Sync models (migrations should be run separately via CLI)
     // In production, use migrations: sequelize-cli db:migrate
     if (config.app.isDevelopment) {

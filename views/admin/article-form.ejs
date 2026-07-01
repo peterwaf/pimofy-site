@@ -21,6 +21,17 @@
         <% } %>
       </div>
 
+      <% const resolvedCategoryOptions = Array.isArray(categoryOptions) && categoryOptions.length ? categoryOptions : ['Uncategorized']; %>
+      <% const rawCategoryValue = formData.category || (article ? article.category : ''); %>
+      <% const selectedCategory = rawCategoryValue && resolvedCategoryOptions.includes(rawCategoryValue) ? rawCategoryValue : 'Uncategorized'; %>
+      <% const customCategoryValue = rawCategoryValue && !resolvedCategoryOptions.includes(rawCategoryValue) ? rawCategoryValue : ''; %>
+      <% const resolvedTagOptions = Array.isArray(tagOptions) ? tagOptions : []; %>
+      <% const selectedTags = Array.isArray(formData.tags)
+        ? formData.tags
+        : (typeof formData.tags === 'string' && formData.tags.trim()
+          ? formData.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
+          : (article && Array.isArray(article.tags) ? article.tags : [])); %>
+
       <form method="POST" action="<%= isNew ? '/admin/articles' : '/admin/articles/' + article.id %>" enctype="multipart/form-data" class="form admin-form" style="gap: 14px;">
         <div class="field">
           <label for="title">Title</label>
@@ -55,12 +66,20 @@
           <div class="rich-editor" data-rich-editor>
             <div class="rich-editor__toolbar" data-rich-editor-toolbar>
               <button type="button" data-command="formatBlock" data-value="p">P</button>
+              <button type="button" data-command="formatBlock" data-value="h1">H1</button>
               <button type="button" data-command="formatBlock" data-value="h2">H2</button>
               <button type="button" data-command="formatBlock" data-value="h3">H3</button>
+              <button type="button" data-command="formatBlock" data-value="h4">H4</button>
+              <button type="button" data-command="formatBlock" data-value="h5">H5</button>
+              <button type="button" data-command="formatBlock" data-value="h6">H6</button>
               <button type="button" data-command="bold"><strong>B</strong></button>
               <button type="button" data-command="italic"><em>I</em></button>
               <button type="button" data-command="underline"><u>U</u></button>
               <button type="button" data-command="insertUnorderedList">• List</button>
+              <button type="button" data-command="createLink">Link</button>
+              <button type="button" data-command="createLink" data-link-target="_blank">Link (New Tab)</button>
+              <button type="button" data-command="editLink">Edit Link</button>
+              <button type="button" data-command="unlink">Unlink</button>
             </div>
             <div id="content" class="rich-editor__surface" contenteditable="true" data-rich-editor-surface></div>
             <textarea name="content" class="rich-editor__source" data-rich-editor-source hidden required><%= formData.content || (article ? article.content : '') %></textarea>
@@ -69,12 +88,39 @@
 
         <div class="grid grid--2" style="gap: 14px;">
           <div class="field">
-            <label for="category">Category</label>
-            <input id="category" name="category" type="text" value="<%= formData.category || (article ? article.category : '') %>" />
+            <label for="categorySelect">Category</label>
+            <select id="categorySelect" data-category-select>
+              <% resolvedCategoryOptions.forEach((categoryName) => { %>
+                <option value="<%= categoryName %>" <%= selectedCategory === categoryName ? 'selected' : '' %>><%= categoryName %></option>
+              <% }); %>
+              <option value="__custom__" <%= customCategoryValue ? 'selected' : '' %>>Add New Category</option>
+            </select>
+            <input id="category" name="category" type="hidden" value="<%= customCategoryValue || selectedCategory %>" data-category-hidden-input />
+            <div style="display: grid; gap: 8px; margin-top: 8px;" data-category-custom-wrap <%= customCategoryValue ? '' : 'hidden' %>>
+              <label for="categoryCustom" style="margin: 0; font-weight: 500; color: var(--muted);">New category name</label>
+              <input id="categoryCustom" type="text" value="<%= customCategoryValue %>" placeholder="Enter a new category" data-category-custom-input />
+            </div>
+            <button type="button" class="btn btn--ghost" style="margin-top: 8px;" data-category-clear>Remove category (set to Uncategorized)</button>
           </div>
           <div class="field">
-            <label for="tags">Tags (comma separated)</label>
-            <input id="tags" name="tags" type="text" value="<%= formData.tags || (article && article.tags ? article.tags.join(', ') : '') %>" />
+            <label for="tagInput">Tags</label>
+            <input id="tags" name="tags" type="hidden" value="<%= selectedTags.join(', ') %>" data-tags-hidden-input />
+            <div class="field" style="margin-bottom: 0;">
+              <input id="tagInput" type="text" placeholder="Add a tag and press Enter" data-tag-custom-input />
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn btn--ghost" data-tag-add-custom>Add Tag</button>
+              <button type="button" class="btn btn--ghost" data-tag-clear>Clear Tags</button>
+            </div>
+            <div data-tag-list style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
+            <% if (resolvedTagOptions.length) { %>
+              <p class="form__note" style="margin-top: 10px;">Quick add from existing tags:</p>
+              <div data-tag-options style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <% resolvedTagOptions.forEach((tagName) => { %>
+                  <button type="button" class="btn btn--ghost" data-tag-option="<%= tagName %>"><%= tagName %></button>
+                <% }); %>
+              </div>
+            <% } %>
           </div>
         </div>
 

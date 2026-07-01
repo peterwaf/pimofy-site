@@ -1,0 +1,47 @@
+<div class="admin-page taxonomy-page taxonomy-overview">
+  <section>
+    <div>
+      <div class="admin-welcome card taxonomy-hero">
+        <div class="admin-welcome__copy">
+          <span class="eyebrow">Taxonomy workspace</span>
+          <p>Manage content structure from one place, then jump into categories or tags for focused updates.</p>
+          <div class="taxonomy-switcher">
+            <a href="/admin/taxonomy/categories" class="btn btn--ghost">Categories</a>
+            <a href="/admin/taxonomy/tags" class="btn btn--ghost">Tags</a>
+          </div>
+        </div>
+        <div class="admin-welcome__panel taxonomy-summary-panel">
+          <div class="taxonomy-overview__stats">
+            <span><strong><%= taxonomySummary.categoriesCount %></strong> categories</span>
+            <span><strong><%= taxonomySummary.tagsCount %></strong> tags</span>
+            <span><strong><%= taxonomySummary.categoriesInUse + taxonomySummary.tagsInUse %></strong> terms in use</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid--2 taxonomy-overview__grid">
+        <a href="/admin/taxonomy/categories" class="card taxonomy-overview__card">
+          <span class="eyebrow">Categories</span>
+          <h3>Manage Categories</h3>
+          <p>Create, rename, and remove categories while keeping article assignments organized.</p>
+          <div class="taxonomy-overview__stats">
+            <span><strong><%= taxonomySummary.categoriesCount %></strong> total</span>
+            <span><strong><%= taxonomySummary.categoriesInUse %></strong> in use</span>
+          </div>
+          <span class="link">Open Categories →</span>
+        </a>
+
+        <a href="/admin/taxonomy/tags" class="card taxonomy-overview__card">
+          <span class="eyebrow">Tags</span>
+          <h3>Manage Tags</h3>
+          <p>Create, rename, and remove tags so your article labeling stays consistent and searchable.</p>
+          <div class="taxonomy-overview__stats">
+            <span><strong><%= taxonomySummary.tagsCount %></strong> total</span>
+            <span><strong><%= taxonomySummary.tagsInUse %></strong> in use</span>
+          </div>
+          <span class="link">Open Tags →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

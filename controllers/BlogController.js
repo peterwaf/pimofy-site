@@ -2,6 +2,31 @@ const { BlogPost, User } = require('../models');
 const { Op } = require('sequelize');
 
 const POSTS_PER_PAGE = 6;
+const DEFAULT_CATEGORY = 'Uncategorized';
+
+function normalizeCategory(value) {
+  const normalized = String(value || '').trim();
+  return normalized || DEFAULT_CATEGORY;
+}
+
+function hasTag(tags, expectedTag) {
+  const normalizedExpected = String(expectedTag || '').trim().toLowerCase();
+  if (!normalizedExpected || !Array.isArray(tags)) {
+    return false;
+  }
+
+  return tags.some((tag) => String(tag || '').trim().toLowerCase() === normalizedExpected);
+}
+
+function buildCategoryWhereClause(category) {
+  if (category === DEFAULT_CATEGORY) {
+    return {
+      [Op.or]: [{ category: DEFAULT_CATEGORY }, { category: null }, { category: '' }],
+    };
+  }
+
+  return { category };
+}
 
 class BlogController {
   // List all published blog posts with pagination
@@ -27,13 +52,21 @@ class BlogController {
         raw: true,
       });
 
+      const normalizedCategories = Array.from(
+        new Set(
+          categories
+            .map((c) => normalizeCategory(c.category))
+            .filter(Boolean)
+        )
+      ).sort((left, right) => left.localeCompare(right));
+
       res.render('blog/index', {
         title: 'Resources & Insights | Pimofy Digital',
         description: 'Read practical insights on data operations, capacity, and scaling for SaaS and Ecommerce teams.',
         posts,
         currentPage: page,
         totalPages,
-        categories: categories.map((c) => c.category).filter(Boolean),
+        categories: normalizedCategories,
       });
     } catch (error) {
       next(error);
@@ -61,10 +94,11 @@ class BlogController {
       await post.increment('views');
 
       // Get related posts by category
+      const normalizedPostCategory = normalizeCategory(post.category);
       const related = await BlogPost.findAll({
         where: {
           published: true,
-          category: post.category,
+          ...buildCategoryWhereClause(normalizedPostCategory),
           id: { [Op.ne]: post.id },
         },
         limit: 3,
@@ -91,12 +125,15 @@ class BlogController {
   // Filter by category
   static async byCategory(req, res, next) {
     try {
-      const { category } = req.params;
+      const category = normalizeCategory(req.params.category);
       const page = parseInt(req.query.page) || 1;
       const offset = (page - 1) * POSTS_PER_PAGE;
 
       const { count, rows: posts } = await BlogPost.findAndCountAll({
-        where: { published: true, category },
+        where: {
+          published: true,
+          ...buildCategoryWhereClause(category),
+        },
         include: [{ model: User, as: 'author', attributes: ['name', 'email'] }],
         order: [['publishDate', 'DESC']],
         limit: POSTS_PER_PAGE,
@@ -130,21 +167,17 @@ class BlogController {
     try {
       const { tag } = req.params;
       const page = parseInt(req.query.page) || 1;
-      const offset = (page - 1) * POSTS_PER_PAGE;
 
-      // Find posts where tags array contains the tag
-      const { count, rows: posts } = await BlogPost.findAndCountAll({
-        where: {
-          published: true,
-          tags: {
-            [Op.contains]: [tag],
-          },
-        },
+      const publishedPosts = await BlogPost.findAll({
+        where: { published: true },
         include: [{ model: User, as: 'author', attributes: ['name', 'email'] }],
         order: [['publishDate', 'DESC']],
-        limit: POSTS_PER_PAGE,
-        offset,
       });
+
+      const matchingPosts = publishedPosts.filter((post) => hasTag(post.tags, tag));
+      const count = matchingPosts.length;
+      const offset = (page - 1) * POSTS_PER_PAGE;
+      const posts = matchingPosts.slice(offset, offset + POSTS_PER_PAGE);
 
       if (count === 0) {
         return res.status(404).render('pages/404', {

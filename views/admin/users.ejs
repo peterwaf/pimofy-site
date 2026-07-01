@@ -1,44 +1,44 @@
 <div class="admin-page">
   <section>
     <div>
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+      <div class="layout-row-between pagination-row">
         <div>
           <h1>Manage Users</h1>
-          <p style="color: var(--muted);">Create and control admin access.</p>
+          <p class="cell-muted">Create and control admin access.</p>
         </div>
         <a href="/admin/users/new" class="btn btn--primary">New User</a>
       </div>
 
-      <div class="card" style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+      <div class="card table-wrap">
+        <table class="table-clean">
           <thead>
-            <tr style="border-bottom: 1px solid var(--line);">
-              <th style="text-align: left; padding: 10px 8px;">Name</th>
-              <th style="text-align: left; padding: 10px 8px;">Email</th>
-              <th style="text-align: left; padding: 10px 8px;">Role</th>
-              <th style="text-align: left; padding: 10px 8px;">Status</th>
-              <th style="text-align: left; padding: 10px 8px;">Actions</th>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <% if (!users || users.length === 0) { %>
               <tr>
-                <td colspan="5" style="padding: 16px 8px; color: var(--muted);">No users found.</td>
+                <td colspan="5" class="cell-muted">No users found.</td>
               </tr>
             <% } %>
             <% (users || []).forEach((u) => { %>
-              <tr style="border-bottom: 1px solid var(--line);">
-                <td style="padding: 12px 8px;"><strong><%= u.name %></strong></td>
-                <td style="padding: 12px 8px;"><%= u.email %></td>
-                <td style="padding: 12px 8px;"><span class="tag"><%= u.role %></span></td>
-                <td style="padding: 12px 8px;">
+              <tr>
+                <td><strong><%= u.name %></strong></td>
+                <td><%= u.email %></td>
+                <td><span class="tag"><%= u.role %></span></td>
+                <td>
                   <% if (u.active) { %>
-                    <span class="tag" style="background: #e9f9ed; color: #127a36;">Active</span>
+                    <span class="tag tag--active">Active</span>
                   <% } else { %>
-                    <span class="tag" style="background: #ffe6df; color: #d63b14;">Disabled</span>
+                    <span class="tag tag--disabled">Disabled</span>
                   <% } %>
                 </td>
-                <td style="padding: 12px 8px;">
+                <td>
                   <% if (u.active) { %>
                     <form method="POST" action="/admin/users/<%= u.id %>/disable" onsubmit="return confirm('Disable this user?');">
                       <button type="submit" class="btn btn--ghost">Disable</button>

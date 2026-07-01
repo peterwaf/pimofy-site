@@ -6,48 +6,96 @@
         <p>Create, edit, publish, and remove blog content.</p>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div class="layout-row-between pagination-row">
+        <div class="actions-row">
           <a href="/admin/articles/import" class="btn btn--ghost">Import CSV</a>
           <a href="/admin/articles/new" class="btn btn--primary">New Article</a>
         </div>
       </div>
 
-      <div class="card" style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+      <form method="GET" action="/admin/articles" class="card card--compact form pagination-row">
+        <div class="grid grid--3">
+          <div class="field">
+            <label for="article-q">Search</label>
+            <input id="article-q" type="text" name="q" value="<%= articleFilters && articleFilters.q ? articleFilters.q : '' %>" placeholder="Title, slug, or excerpt" />
+          </div>
+          <div class="field">
+            <label for="article-category">Category</label>
+            <select id="article-category" name="category">
+              <option value="">All categories</option>
+              <% (categoryOptions || []).forEach((categoryName) => { %>
+                <option value="<%= categoryName %>" <%= articleFilters && articleFilters.category === categoryName ? 'selected' : '' %>><%= categoryName %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="field">
+            <label for="article-tag">Tag</label>
+            <select id="article-tag" name="tag">
+              <option value="">All tags</option>
+              <% (tagOptions || []).forEach((tagName) => { %>
+                <option value="<%= tagName %>" <%= articleFilters && articleFilters.tag === tagName ? 'selected' : '' %>><%= tagName %></option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+        <div class="actions-row">
+          <button type="submit" class="btn btn--primary">Apply Filters</button>
+          <a href="/admin/articles" class="btn btn--ghost">Reset</a>
+        </div>
+      </form>
+
+      <div class="card table-wrap">
+        <table class="table-clean">
           <thead>
-            <tr style="border-bottom: 1px solid var(--line);">
-              <th style="text-align: left; padding: 10px 8px;">Title</th>
-              <th style="text-align: left; padding: 10px 8px;">Category</th>
-              <th style="text-align: left; padding: 10px 8px;">Status</th>
-              <th style="text-align: left; padding: 10px 8px;">Author</th>
-              <th style="text-align: left; padding: 10px 8px;">Actions</th>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Tags</th>
+              <th>Status</th>
+              <th>Author</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <% if (!articles || articles.length === 0) { %>
               <tr>
-                <td colspan="5" style="padding: 16px 8px; color: var(--muted);">No articles found.</td>
+                <td colspan="6" class="cell-muted">No articles found.</td>
               </tr>
             <% } %>
             <% (articles || []).forEach((article) => { %>
-              <tr style="border-bottom: 1px solid var(--line);">
-                <td style="padding: 12px 8px;">
+              <tr>
+                <td>
                   <strong><%= article.title %></strong>
-                  <div style="font-size: 0.88rem; color: var(--muted);">/<%= article.slug %></div>
+                  <div class="cell-muted">/<%= article.slug %></div>
                 </td>
-                <td style="padding: 12px 8px;"><%= article.category || '-' %></td>
-                <td style="padding: 12px 8px;">
+                <td><%= article.category || 'Uncategorized' %></td>
+                <td>
+                  <% if (article.tags && article.tags.length) { %>
+                    <div class="tag-list">
+                      <% article.tags.forEach((tagName) => { %>
+                        <span class="tag tag--plain"><%= tagName %></span>
+                      <% }); %>
+                    </div>
+                  <% } else { %>
+                    <span class="cell-muted">-</span>
+                  <% } %>
+                </td>
+                <td>
                   <% if (article.published) { %>
                     <span class="tag">Published</span>
                   <% } else { %>
-                    <span class="tag" style="background: #ffe6df; color: #d63b14;">Draft</span>
+                    <span class="tag tag--draft">Draft</span>
                   <% } %>
                 </td>
-                <td style="padding: 12px 8px;"><%= article.author ? article.author.name : 'Unknown' %></td>
-                <td style="padding: 12px 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <td><%= article.author ? article.author.name : 'Unknown' %></td>
+                <td class="table-actions">
                   <a href="/admin/articles/<%= article.id %>/edit" class="btn btn--ghost">Edit</a>
-                  <form method="POST" action="/admin/articles/<%= article.id %>/delete" onsubmit="return confirm('Delete this article?');">
+                  <form
+                    method="POST"
+                    action="/admin/articles/<%= article.id %>/delete"
+                    data-confirm-delete
+                    data-confirm-title="<%= article.title %>"
+                  >
                     <button type="submit" class="btn btn--ghost">Delete</button>
                   </form>
                 </td>
@@ -58,13 +106,13 @@
       </div>
 
       <% if (totalPages > 1) { %>
-        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 20px; flex-wrap: wrap;">
-          <% if (currentPage > 1) { %>
-            <a class="btn btn--ghost" href="/admin/articles?page=<%= currentPage - 1 %>">Previous</a>
+        <div class="actions-row actions-row--center pagination-row">
+          <% if (prevPageUrl) { %>
+            <a class="btn btn--ghost" href="<%= prevPageUrl %>">Previous</a>
           <% } %>
-          <span class="btn btn--ghost" style="pointer-events: none;">Page <%= currentPage %> of <%= totalPages %></span>
-          <% if (currentPage < totalPages) { %>
-            <a class="btn btn--ghost" href="/admin/articles?page=<%= currentPage + 1 %>">Next</a>
+          <span class="btn btn--ghost pagination-pill">Page <%= currentPage %> of <%= totalPages %></span>
+          <% if (nextPageUrl) { %>
+            <a class="btn btn--ghost" href="<%= nextPageUrl %>">Next</a>
           <% } %>
         </div>
       <% } %>

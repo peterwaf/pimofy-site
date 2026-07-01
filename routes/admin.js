@@ -32,18 +32,60 @@ const articleUpload = multer({
 	limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+const mediaUpload = multer({
+	storage: multer.diskStorage({
+		destination: (req, file, cb) => cb(null, articleUploadDir),
+		filename: (req, file, cb) => {
+			const base = path.basename(file.originalname, path.extname(file.originalname)).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'media';
+			const uniqueName = `${Date.now()}-${base}${path.extname(file.originalname).toLowerCase()}`;
+			cb(null, uniqueName);
+		},
+	}),
+	fileFilter: (req, file, cb) => {
+		if (!file.mimetype.startsWith('image/')) {
+			return cb(new Error('Only image uploads are allowed in the media library'));
+		}
+		cb(null, true);
+	},
+	limits: { fileSize: 10 * 1024 * 1024 },
+});
+
 // Apply authentication and authorization to all admin routes
 router.use(isAuthenticated, isAdmin);
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
 	res.locals.layout = 'layouts/admin';
-	next();
+	try {
+		res.locals.taxonomySummary = await AdminController.getTaxonomySummary();
+		next();
+	} catch (error) {
+		next(error);
+	}
 });
+
+function redirectWithSessionSave(req, res, location) {
+	if (!req.session || typeof req.session.save !== 'function') {
+		return res.redirect(location);
+	}
+
+	return req.session.save(() => {
+		res.redirect(location);
+	});
+}
 
 // Admin dashboard
 router.get('/', AdminController.dashboard);
 
 // Articles management
 router.get('/articles', AdminController.articles);
+router.get('/taxonomy', AdminController.taxonomy);
+router.get('/taxonomy/categories', AdminController.taxonomyCategories);
+router.get('/taxonomy/tags', AdminController.taxonomyTags);
+router.post('/taxonomy/categories', AdminController.createCategory);
+router.post('/taxonomy/categories/:name/rename', AdminController.renameCategory);
+router.post('/taxonomy/categories/:name/delete', AdminController.deleteCategory);
+router.post('/taxonomy/tags', AdminController.createTag);
+router.post('/taxonomy/tags/:name/rename', AdminController.renameTag);
+router.post('/taxonomy/tags/:name/delete', AdminController.deleteTag);
 router.get('/articles/import', AdminController.importArticlesPage);
 router.post('/articles/import', csvUpload.single('csvFile'), AdminController.importArticlesCsv);
 router.get('/articles/new', AdminController.newArticle);
@@ -69,7 +111,7 @@ router.use((err, req, res, next) => {
 			published: req.body?.published === 'on' ? 'on' : '',
 		};
 		req.session.articleMessage = null;
-		return res.redirect('/admin/articles/new#article-feedback-anchor');
+		return redirectWithSessionSave(req, res, '/admin/articles/new#article-feedback-anchor');
 	}
 
 	if (req.method === 'POST' && req.path.match(/^\/articles\/[^/]+$/) && req.session) {
@@ -88,7 +130,7 @@ router.use((err, req, res, next) => {
 			published: req.body?.published === 'on' ? 'on' : '',
 		};
 		req.session.articleMessage = null;
-		return res.redirect(`/admin/articles/${articleId}/edit#article-feedback-anchor`);
+		return redirectWithSessionSave(req, res, `/admin/articles/${articleId}/edit#article-feedback-anchor`);
 	}
 
 	next(err);
@@ -96,7 +138,8 @@ router.use((err, req, res, next) => {
 
 // Media library
 router.get('/media', AdminController.media);
-router.post('/media/upload', AdminController.uploadMedia);
+router.post('/media/upload', mediaUpload.single('file'), AdminController.uploadMedia);
+router.post('/media/:id/update', AdminController.updateMedia);
 router.post('/media/:id/delete', AdminController.deleteMedia);
 
 // User management (superadmin only)
