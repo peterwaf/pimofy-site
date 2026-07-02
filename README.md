@@ -98,27 +98,28 @@ Keep `.env` private and do not commit it to version control.
 - Confirm migrations and seed data ran successfully.
 - Verify the admin account password is changed from the initial seed value.
 
-## Deploy on Netlify
+## Deploy on Vercel
 
-This project is an Express server rendered through a Netlify Function.
+This project is an Express server rendered through a Vercel Serverless Function.
 
-### 1. Netlify adapter files
+### 1. Vercel adapter files
 
 These files are already included:
 
-- `netlify.toml`
-- `netlify/functions/app.js`
+- `vercel.json`
+- `api/index.js`
 
 ### 2. Connect your repository
 
-1. In Netlify, choose **Add new site** -> **Import from Git**.
+1. In Vercel, choose **Add New...** -> **Project**.
 2. Select this repository and branch.
-3. Build command: `npm install`
-4. Functions directory: `netlify/functions`
+3. Framework preset: **Other**.
+4. Build command: leave empty.
+5. Output directory: leave empty.
 
 ### 3. Configure environment variables
 
-In Netlify Site Settings -> Environment Variables, add all required values from your local `.env`.
+In Vercel Project Settings -> Environment Variables, add all required values from your local `.env`.
 
 At minimum, configure:
 
@@ -137,8 +138,12 @@ At minimum, configure:
 - `SMTP_PASS`
 - `CONTACT_EMAIL`
 - `ADMIN_EMAIL`
-- `APP_URL` (set to your Netlify URL)
+- `APP_URL` (set to your Vercel production URL)
 - `NODE_ENV=production`
+
+Optional for network compatibility:
+
+- `DB_IP_FAMILY=4`
 
 ### 4. Apply database migrations
 
@@ -158,11 +163,13 @@ After deploy, verify:
 - Contact form works.
 - Admin create/update/delete flows succeed.
 
-### 6. Upload storage caveat
+### 6. Upload and taxonomy caveat
 
-Netlify Functions use ephemeral filesystem storage. Local uploads under `public/uploads` are not durable in production.
+Vercel Serverless Functions use ephemeral filesystem storage. Local uploads under `public/uploads` are not durable in production.
 
-For reliable production media handling, move uploads to object storage (for example Supabase Storage) and persist public URLs in the database.
+For reliable production media handling, use object storage (for example Supabase Storage) and persist public URLs in the database.
+
+Taxonomy reads from `config/taxonomy.json` are supported in the deployed bundle, but file writes are not durable across serverless instances.
 
 ## Notes
 

@@ -19,6 +19,28 @@ function resolveRuntimePath(...segments) {
   return path.join(__dirname, ...segments);
 }
 
+function getRequestBaseUrl(req) {
+  const forwardedProto = String(req.headers['x-forwarded-proto'] || '')
+    .split(',')[0]
+    .trim();
+  const protocol = forwardedProto || req.protocol || 'https';
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+
+  if (host) {
+    return `${protocol}://${host}`;
+  }
+
+  return config.app.url || 'http://localhost:3000';
+}
+
+function buildCanonicalUrl(req) {
+  try {
+    return new URL(req.originalUrl || '/', getRequestBaseUrl(req)).toString();
+  } catch (error) {
+    return config.app.url || 'http://localhost:3000';
+  }
+}
+
 // Create Express app
 const app = express();
 
@@ -135,6 +157,8 @@ app.use((req, res, next) => {
   res.locals.currentYear = new Date().getFullYear();
   res.locals.currentPath = req.path;
   res.locals.taxonomySummary = res.locals.taxonomySummary || null;
+  res.locals.siteUrl = getRequestBaseUrl(req);
+  res.locals.canonicalUrl = buildCanonicalUrl(req);
   next();
 });
 

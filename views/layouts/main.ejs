@@ -9,7 +9,7 @@
     <% if (typeof keywords !== 'undefined') { %><meta name="keywords" content="<%= keywords %>" /><% } %>
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="<%= config.app.url %>" />
+    <link rel="canonical" href="<%= canonicalUrl || config.app.url %>" />
 
     <!-- Preconnect to fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,7 +23,7 @@
     <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'Pimofy Digital' %>" />
     <meta property="og:description" content="<%= typeof description !== 'undefined' ? description : 'Dedicated data operations for SaaS and Ecommerce companies' %>" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="<%= config.app.url %>" />
+    <meta property="og:url" content="<%= canonicalUrl || config.app.url %>" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
