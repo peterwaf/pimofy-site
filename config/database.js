@@ -5,6 +5,18 @@ const rejectUnauthorized = String(process.env.DB_SSL_REJECT_UNAUTHORIZED || 'fal
 const ipFamily = Number(process.env.DB_IP_FAMILY || 0);
 const isVercel = String(process.env.VERCEL || '').toLowerCase() === '1'
   || String(process.env.VERCEL || '').toLowerCase() === 'true';
+const parsedPoolMax = Number(process.env.DB_POOL_MAX);
+const parsedPoolMin = Number(process.env.DB_POOL_MIN);
+const parsedPoolAcquire = Number(process.env.DB_POOL_ACQUIRE_MS);
+const parsedPoolIdle = Number(process.env.DB_POOL_IDLE_MS);
+
+const poolConfig = {
+  // Keep pool small by default in serverless runtimes to avoid exhausting shared DB connections.
+  max: Number.isFinite(parsedPoolMax) && parsedPoolMax > 0 ? parsedPoolMax : (isVercel ? 1 : 5),
+  min: Number.isFinite(parsedPoolMin) && parsedPoolMin >= 0 ? parsedPoolMin : 0,
+  acquire: Number.isFinite(parsedPoolAcquire) && parsedPoolAcquire > 0 ? parsedPoolAcquire : 30000,
+  idle: Number.isFinite(parsedPoolIdle) && parsedPoolIdle > 0 ? parsedPoolIdle : 10000,
+};
 
 const buildDialectOptions = (forceSsl = false) => {
   const options = {};
@@ -27,6 +39,7 @@ const buildDialectOptions = (forceSsl = false) => {
 const baseConfig = {
   dialect: 'postgres',
   logging: process.env.NODE_ENV === 'production' ? false : console.log,
+  pool: poolConfig,
 };
 
 if (process.env.DATABASE_URL) {

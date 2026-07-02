@@ -13,6 +13,7 @@ const sequelize = dbConfig.url
       dialect: dbConfig.dialect,
       dialectModule: pg,
       logging: dbConfig.logging,
+      pool: dbConfig.pool,
       dialectOptions: dbConfig.dialectOptions,
     })
   : new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
@@ -21,6 +22,7 @@ const sequelize = dbConfig.url
       dialect: dbConfig.dialect,
       dialectModule: pg,
       logging: dbConfig.logging,
+      pool: dbConfig.pool,
       dialectOptions: dbConfig.dialectOptions,
     });
 
