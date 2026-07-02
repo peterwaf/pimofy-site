@@ -130,6 +130,12 @@ app.use(
 );
 
 app.locals.sessionStore = sessionStore;
+app.locals.currentPath = '';
+app.locals.user = null;
+app.locals.authUser = null;
+app.locals.isAuthenticated = false;
+app.locals.taxonomySummary = null;
+app.locals.currentYear = new Date().getFullYear();
 
 // ============================================
 // STATIC FILES

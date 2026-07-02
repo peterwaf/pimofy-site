@@ -1,4 +1,6 @@
 <aside class="admin-sidebar" id="admin-sidebar">
+  <% const navCurrentPath = typeof currentPath === 'string' ? currentPath : ''; %>
+  <% const navUser = typeof user !== 'undefined' ? user : null; %>
   <% const summary = typeof taxonomySummary !== 'undefined' && taxonomySummary
     ? taxonomySummary
     : { articlesCount: 0, categoriesCount: 0, tagsCount: 0 }; %>
@@ -16,23 +18,23 @@
   </div>
 
   <nav class="admin-nav" aria-label="Admin navigation">
-    <a href="/admin" class="admin-nav__link <%= currentPath === '/admin' ? 'is-active' : '' %>"><span class="admin-nav__label">Dashboard</span></a>
-    <a href="/admin/articles" class="admin-nav__link <%= currentPath.startsWith('/admin/articles') ? 'is-active' : '' %>"><span class="admin-nav__label">Articles</span><span class="admin-nav__count"><%= summary.articlesCount %></span></a>
+    <a href="/admin" class="admin-nav__link <%= navCurrentPath === '/admin' ? 'is-active' : '' %>"><span class="admin-nav__label">Dashboard</span></a>
+    <a href="/admin/articles" class="admin-nav__link <%= navCurrentPath.startsWith('/admin/articles') ? 'is-active' : '' %>"><span class="admin-nav__label">Articles</span><span class="admin-nav__count"><%= summary.articlesCount %></span></a>
     <div class="admin-nav__section">
       <div class="admin-nav__section-head">
-        <a href="/admin/taxonomy" class="admin-nav__section-label <%= currentPath.startsWith('/admin/taxonomy') ? 'is-active' : '' %>">Taxonomies</a>
+        <a href="/admin/taxonomy" class="admin-nav__section-label <%= navCurrentPath.startsWith('/admin/taxonomy') ? 'is-active' : '' %>">Taxonomies</a>
         <span class="admin-nav__count"><%= summary.categoriesCount + summary.tagsCount %></span>
       </div>
       <div class="admin-nav__submenu">
-        <a href="/admin/taxonomy/categories" class="admin-nav__sublink <%= currentPath === '/admin/taxonomy/categories' ? 'is-active' : '' %>"><span class="admin-nav__label">Categories</span><span class="admin-nav__count"><%= summary.categoriesCount %></span></a>
-        <a href="/admin/taxonomy/tags" class="admin-nav__sublink <%= currentPath === '/admin/taxonomy/tags' ? 'is-active' : '' %>"><span class="admin-nav__label">Tags</span><span class="admin-nav__count"><%= summary.tagsCount %></span></a>
+        <a href="/admin/taxonomy/categories" class="admin-nav__sublink <%= navCurrentPath === '/admin/taxonomy/categories' ? 'is-active' : '' %>"><span class="admin-nav__label">Categories</span><span class="admin-nav__count"><%= summary.categoriesCount %></span></a>
+        <a href="/admin/taxonomy/tags" class="admin-nav__sublink <%= navCurrentPath === '/admin/taxonomy/tags' ? 'is-active' : '' %>"><span class="admin-nav__label">Tags</span><span class="admin-nav__count"><%= summary.tagsCount %></span></a>
       </div>
     </div>
-    <a href="/admin/articles/new" class="admin-nav__link <%= currentPath === '/admin/articles/new' ? 'is-active' : '' %>"><span class="admin-nav__label">New article</span></a>
-    <a href="/admin/articles/import" class="admin-nav__link <%= currentPath === '/admin/articles/import' ? 'is-active' : '' %>"><span class="admin-nav__label">Import CSV</span></a>
-    <a href="/admin/media" class="admin-nav__link <%= currentPath === '/admin/media' ? 'is-active' : '' %>"><span class="admin-nav__label">Media library</span></a>
-    <% if (user && user.role === 'superadmin') { %>
-      <a href="/admin/users" class="admin-nav__link <%= currentPath.startsWith('/admin/users') ? 'is-active' : '' %>"><span class="admin-nav__label">Users</span></a>
+    <a href="/admin/articles/new" class="admin-nav__link <%= navCurrentPath === '/admin/articles/new' ? 'is-active' : '' %>"><span class="admin-nav__label">New article</span></a>
+    <a href="/admin/articles/import" class="admin-nav__link <%= navCurrentPath === '/admin/articles/import' ? 'is-active' : '' %>"><span class="admin-nav__label">Import CSV</span></a>
+    <a href="/admin/media" class="admin-nav__link <%= navCurrentPath === '/admin/media' ? 'is-active' : '' %>"><span class="admin-nav__label">Media library</span></a>
+    <% if (navUser && navUser.role === 'superadmin') { %>
+      <a href="/admin/users" class="admin-nav__link <%= navCurrentPath.startsWith('/admin/users') ? 'is-active' : '' %>"><span class="admin-nav__label">Users</span></a>
     <% } %>
   </nav>
 </aside>

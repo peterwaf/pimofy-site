@@ -1,11 +1,14 @@
 <header class="header">
+  <% const navCurrentPath = typeof currentPath === 'string' ? currentPath : ''; %>
+  <% const navIsAuthenticated = typeof isAuthenticated === 'boolean' ? isAuthenticated : false; %>
+  <% const navCsrfToken = typeof csrfToken === 'string' ? csrfToken : ''; %>
   <div class="container">
     <nav class="nav" aria-label="Primary">
       <a class="nav__logo" href="/" aria-label="Pimofy Digital home">
         <img src="/assets/logo.png" alt="Pimofy Digital" />
       </a>
       <ul class="nav__menu">
-        <li><a href="/" <% if (currentPath === '/') { %>aria-current="page"<% } %>>Home</a></li>
+        <li><a href="/" <% if (navCurrentPath === '/') { %>aria-current="page"<% } %>>Home</a></li>
         <li class="dropdown" aria-expanded="false">
           <button class="dropdown__toggle" aria-haspopup="true">
             Solutions
@@ -18,14 +21,14 @@
           </ul>
         </li>
         <li><a href="/industries">Industries</a></li>
-        <li><a href="/blog" <% if (currentPath === '/blog' || currentPath.startsWith('/blog/')) { %>aria-current="page"<% } %>>Resources</a></li>
+        <li><a href="/blog" <% if (navCurrentPath === '/blog' || navCurrentPath.startsWith('/blog/')) { %>aria-current="page"<% } %>>Resources</a></li>
         <li><a href="/about">About</a></li>
         <li class="nav__mobile-cta"><a href="/contact" class="btn btn--primary">Book a Call</a></li>
-        <% if (isAuthenticated) { %>
+        <% if (navIsAuthenticated) { %>
           <li><a href="/admin">Admin</a></li>
           <li>
             <form method="POST" action="/auth/logout" class="nav__logout-form">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <input type="hidden" name="_csrf" value="<%= navCsrfToken %>" />
               <button type="submit" class="nav__logout-button">Logout</button>
             </form>
           </li>
@@ -33,7 +36,7 @@
       </ul>
       <div class="nav__actions">
         <a href="/contact" class="btn btn--primary">Book a Call</a>
-        <% if (isAuthenticated) { %>
+        <% if (navIsAuthenticated) { %>
           <a href="/admin" class="btn btn--ghost">Admin</a>
         <% } %>
       </div>
