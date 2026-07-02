@@ -1,6 +1,10 @@
 [build]
 functions = "netlify/functions"
 
+[functions]
+node_bundler = "esbuild"
+external_node_modules = ["sequelize", "pg", "pg-hstore"]
+
 [[redirects]]
 from = "/*"
 to = "/.netlify/functions/app"
