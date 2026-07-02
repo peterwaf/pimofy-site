@@ -5,10 +5,37 @@ const rejectUnauthorized = String(process.env.DB_SSL_REJECT_UNAUTHORIZED || 'fal
 const ipFamily = Number(process.env.DB_IP_FAMILY || 0);
 const isVercel = String(process.env.VERCEL || '').toLowerCase() === '1'
   || String(process.env.VERCEL || '').toLowerCase() === 'true';
+const poolMode = String(process.env.DB_POOL_MODE || (isVercel ? 'transaction' : 'session')).toLowerCase();
 const parsedPoolMax = Number(process.env.DB_POOL_MAX);
 const parsedPoolMin = Number(process.env.DB_POOL_MIN);
 const parsedPoolAcquire = Number(process.env.DB_POOL_ACQUIRE_MS);
 const parsedPoolIdle = Number(process.env.DB_POOL_IDLE_MS);
+
+function resolveDatabaseUrl(rawUrl) {
+  if (!rawUrl || poolMode !== 'transaction') {
+    return rawUrl;
+  }
+
+  try {
+    const parsedUrl = new URL(rawUrl);
+    const isSupabasePooler = parsedUrl.hostname.endsWith('.pooler.supabase.com');
+
+    if (!isSupabasePooler) {
+      return rawUrl;
+    }
+
+    // Supabase transaction pooler listens on 6543 while session mode uses 5432.
+    if (!parsedUrl.port || parsedUrl.port === '5432') {
+      parsedUrl.port = '6543';
+    }
+
+    return parsedUrl.toString();
+  } catch (error) {
+    return rawUrl;
+  }
+}
+
+const resolvedDatabaseUrl = resolveDatabaseUrl(process.env.DATABASE_URL);
 
 const poolConfig = {
   // Keep pool small by default in serverless runtimes to avoid exhausting shared DB connections.
@@ -42,23 +69,23 @@ const baseConfig = {
   pool: poolConfig,
 };
 
-if (process.env.DATABASE_URL) {
+if (resolvedDatabaseUrl) {
   const config = {
     development: {
       ...baseConfig,
-      url: process.env.DATABASE_URL,
+      url: resolvedDatabaseUrl,
       dialectOptions: buildDialectOptions(false),
     },
     test: {
       ...baseConfig,
       logging: false,
-      url: process.env.DATABASE_URL,
+      url: resolvedDatabaseUrl,
       dialectOptions: buildDialectOptions(false),
     },
     production: {
       ...baseConfig,
       logging: false,
-      url: process.env.DATABASE_URL,
+      url: resolvedDatabaseUrl,
       dialectOptions: buildDialectOptions(true),
     },
   };
