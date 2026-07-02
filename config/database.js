@@ -3,6 +3,7 @@ require('dotenv').config();
 const useSsl = String(process.env.DB_SSL || '').toLowerCase() === 'true';
 const rejectUnauthorized = String(process.env.DB_SSL_REJECT_UNAUTHORIZED || 'false').toLowerCase() === 'true';
 const ipFamily = Number(process.env.DB_IP_FAMILY || 0);
+const isNetlify = String(process.env.NETLIFY || '').toLowerCase() === 'true';
 
 const buildDialectOptions = (forceSsl = false) => {
   const options = {};
@@ -15,7 +16,8 @@ const buildDialectOptions = (forceSsl = false) => {
   }
 
   if (ipFamily === 4 || ipFamily === 6) {
-    options.family = ipFamily;
+    // Netlify runtimes can fail when IPv6 is forced; prefer IPv4 there.
+    options.family = isNetlify && ipFamily === 6 ? 4 : ipFamily;
   }
 
   return options;
