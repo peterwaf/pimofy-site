@@ -1,14 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
 const { isAuthenticated, isAdmin, isSuperAdmin } = require('../middleware/auth');
 const AdminController = require('../controllers/AdminController');
-
-const articleUploadDir = path.join(__dirname, '..', 'public', 'uploads', 'blog-posts');
-
-fs.mkdirSync(articleUploadDir, { recursive: true });
 
 const csvUpload = multer({
 	storage: multer.memoryStorage(),
@@ -16,13 +10,7 @@ const csvUpload = multer({
 });
 
 const articleUpload = multer({
-	storage: multer.diskStorage({
-		destination: (req, file, cb) => cb(null, articleUploadDir),
-		filename: (req, file, cb) => {
-			const safeName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
-			cb(null, safeName);
-		},
-	}),
+	storage: multer.memoryStorage(),
 	fileFilter: (req, file, cb) => {
 		if (!file.mimetype.startsWith('image/')) {
 			return cb(new Error('Featured image must be an image file'));
@@ -33,14 +21,7 @@ const articleUpload = multer({
 });
 
 const mediaUpload = multer({
-	storage: multer.diskStorage({
-		destination: (req, file, cb) => cb(null, articleUploadDir),
-		filename: (req, file, cb) => {
-			const base = path.basename(file.originalname, path.extname(file.originalname)).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'media';
-			const uniqueName = `${Date.now()}-${base}${path.extname(file.originalname).toLowerCase()}`;
-			cb(null, uniqueName);
-		},
-	}),
+	storage: multer.memoryStorage(),
 	fileFilter: (req, file, cb) => {
 		if (!file.mimetype.startsWith('image/')) {
 			return cb(new Error('Only image uploads are allowed in the media library'));

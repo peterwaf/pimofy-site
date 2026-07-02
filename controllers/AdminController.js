@@ -2,13 +2,41 @@ const { BlogPost, User } = require('../models');
 const { Op } = require('sequelize');
 const bcryptjs = require('bcryptjs');
 const sanitizeHtml = require('sanitize-html');
+const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-const MEDIA_UPLOAD_DIR = path.join(__dirname, '..', 'public', 'uploads', 'blog-posts');
-const MEDIA_URL_PREFIX = '/uploads/blog-posts';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'media';
+const SUPABASE_MEDIA_FOLDER = process.env.SUPABASE_MEDIA_FOLDER || 'blog-posts';
 const DEFAULT_CATEGORY = 'Uncategorized';
 const TAXONOMY_CONFIG_PATH = path.join(__dirname, '..', 'config', 'taxonomy.json');
+
+let supabaseStorageClient = null;
+
+function hasSupabaseStorageConfig() {
+  return Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
+}
+
+function ensureSupabaseStorageClient() {
+  if (supabaseStorageClient) {
+    return supabaseStorageClient;
+  }
+
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Supabase Storage is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
+  }
+
+  supabaseStorageClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+
+  return supabaseStorageClient;
+}
 
 function normalizeCategory(value) {
   const normalized = String(value || '').trim();
@@ -350,9 +378,75 @@ function buildArticleFormData(req, article = null) {
   };
 }
 
-function resolveFeaturedImage(req, article = null) {
+function createStorageObjectPath(filename) {
+  return `${SUPABASE_MEDIA_FOLDER}/${filename}`;
+}
+
+function getPublicMediaUrl(objectPath) {
+  const supabase = ensureSupabaseStorageClient();
+  const { data } = supabase.storage.from(SUPABASE_STORAGE_BUCKET).getPublicUrl(objectPath);
+  return data.publicUrl;
+}
+
+function getStorageFilenameFromUrl(urlValue) {
+  try {
+    const parsed = new URL(String(urlValue || '').trim());
+    const marker = `/object/public/${SUPABASE_STORAGE_BUCKET}/`;
+    const markerIndex = parsed.pathname.indexOf(marker);
+    if (markerIndex === -1) {
+      return '';
+    }
+
+    const objectPath = decodeURIComponent(parsed.pathname.slice(markerIndex + marker.length));
+    if (!objectPath.startsWith(`${SUPABASE_MEDIA_FOLDER}/`)) {
+      return '';
+    }
+
+    return path.basename(objectPath);
+  } catch (error) {
+    return '';
+  }
+}
+
+function createUploadFilename(originalname, fallbackBase = 'media') {
+  const extension = path.extname(String(originalname || '')).toLowerCase();
+  const baseNameRaw = path.basename(String(originalname || ''), extension);
+  const safeBase = slugify(baseNameRaw) || fallbackBase;
+  const safeExtension = extension && isImageFile(`x${extension}`) ? extension : '.jpg';
+  return `${Date.now()}-${Math.round(Math.random() * 1e9)}-${safeBase}${safeExtension}`;
+}
+
+async function uploadImageToStorage(file, fallbackBase) {
+  if (!file || !file.buffer) {
+    throw new Error('No upload file was provided.');
+  }
+
+  const supabase = ensureSupabaseStorageClient();
+  const filename = createUploadFilename(file.originalname, fallbackBase);
+  const objectPath = createStorageObjectPath(filename);
+
+  const { error } = await supabase.storage.from(SUPABASE_STORAGE_BUCKET).upload(objectPath, file.buffer, {
+    upsert: false,
+    cacheControl: '3600',
+    contentType: file.mimetype || 'application/octet-stream',
+  });
+
+  if (error) {
+    throw new Error(error.message || 'Unable to upload media to Supabase Storage.');
+  }
+
+  return {
+    filename,
+    objectPath,
+    url: getPublicMediaUrl(objectPath),
+    size: file.size || file.buffer.length || 0,
+  };
+}
+
+async function resolveFeaturedImage(req, article = null) {
   if (req.file) {
-    return `/uploads/blog-posts/${req.file.filename}`;
+    const uploaded = await uploadImageToStorage(req.file, 'featured');
+    return uploaded.url;
   }
 
   if (article && article.featuredImage) {
@@ -367,31 +461,39 @@ function isImageFile(filename) {
 }
 
 async function listMediaFiles() {
-  const files = [];
-
-  if (!fs.existsSync(MEDIA_UPLOAD_DIR)) {
-    return files;
+  if (!hasSupabaseStorageConfig()) {
+    return [];
   }
 
-  const entries = await fs.promises.readdir(MEDIA_UPLOAD_DIR, { withFileTypes: true });
-  for (const entry of entries) {
-    if (!entry.isFile() || !isImageFile(entry.name)) {
-      continue;
-    }
-
-    const fullPath = path.join(MEDIA_UPLOAD_DIR, entry.name);
-    const stat = await fs.promises.stat(fullPath);
-
-    files.push({
-      filename: entry.name,
-      url: `${MEDIA_URL_PREFIX}/${entry.name}`,
-      size: stat.size,
-      updatedAt: stat.mtime,
-      createdAt: stat.birthtime,
+  const supabase = ensureSupabaseStorageClient();
+  const { data, error } = await supabase.storage
+    .from(SUPABASE_STORAGE_BUCKET)
+    .list(SUPABASE_MEDIA_FOLDER, {
+      limit: 1000,
+      offset: 0,
+      sortBy: {
+        column: 'updated_at',
+        order: 'desc',
+      },
     });
+
+  if (error) {
+    throw new Error(error.message || 'Unable to list media files from Supabase Storage.');
   }
 
-  return files.sort((left, right) => right.updatedAt - left.updatedAt);
+  return (data || [])
+    .filter((entry) => entry && typeof entry.name === 'string' && isImageFile(entry.name))
+    .map((entry) => {
+      const objectPath = createStorageObjectPath(entry.name);
+      return {
+        filename: entry.name,
+        url: getPublicMediaUrl(objectPath),
+        size: Number(entry.metadata && entry.metadata.size) || 0,
+        updatedAt: entry.updated_at ? new Date(entry.updated_at) : new Date(),
+        createdAt: entry.created_at ? new Date(entry.created_at) : new Date(),
+      };
+    })
+    .sort((left, right) => right.updatedAt - left.updatedAt);
 }
 
 function getMediaFilenameFromParam(value) {
@@ -1138,7 +1240,7 @@ class AdminController {
         slug,
         excerpt,
         content,
-        featuredImage: resolveFeaturedImage(req),
+        featuredImage: await resolveFeaturedImage(req),
         category: sanitized.category,
         tags: sanitized.tags,
         seoTitle: sanitized.seoTitle || title,
@@ -1248,7 +1350,7 @@ class AdminController {
         }
       }
 
-      const featuredImage = resolveFeaturedImage(req, article);
+      const featuredImage = await resolveFeaturedImage(req, article);
 
       await article.update({
         title,
@@ -1339,7 +1441,11 @@ class AdminController {
     try {
       const allMediaFiles = await listMediaFiles();
       const mediaMessage = req.session.mediaMessage || null;
-      const mediaError = req.session.mediaError || null;
+      let mediaError = req.session.mediaError || null;
+
+      if (!hasSupabaseStorageConfig()) {
+        mediaError = mediaError || 'Supabase Storage is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to manage media uploads.';
+      }
 
       const q = String(req.query.q || '').trim();
       const sort = normalizeMediaSort(req.query.sort);
@@ -1433,10 +1539,11 @@ class AdminController {
         return redirectWithSessionSave(req, res, buildMediaRedirectUrl(returnTo));
       }
 
+      const uploaded = await uploadImageToStorage(req.file, 'media');
       const uploadedMedia = {
         success: true,
-        filename: req.file.filename,
-        path: `${MEDIA_URL_PREFIX}/${req.file.filename}`,
+        filename: uploaded.filename,
+        path: uploaded.url,
       };
 
       if (wantsJson) {
@@ -1464,12 +1571,14 @@ class AdminController {
     try {
       const returnTo = getMediaReturnTo(req.body.returnTo);
       const currentFilename = getMediaFilenameFromParam(req.params.id);
-      const currentPath = path.join(MEDIA_UPLOAD_DIR, currentFilename);
+      const currentPath = createStorageObjectPath(currentFilename);
 
-      if (!currentFilename || !fs.existsSync(currentPath) || !isImageFile(currentFilename)) {
+      if (!currentFilename || !isImageFile(currentFilename)) {
         req.session.mediaError = 'Media file was not found.';
         return redirectWithSessionSave(req, res, buildMediaRedirectUrl(returnTo));
       }
+
+      const supabase = ensureSupabaseStorageClient();
 
       const currentExtension = path.extname(currentFilename).toLowerCase();
       const nextFilename = normalizeMediaFilename(req.body.filename, currentExtension);
@@ -1484,13 +1593,28 @@ class AdminController {
         return redirectWithSessionSave(req, res, buildMediaRedirectUrl(returnTo));
       }
 
-      const nextPath = path.join(MEDIA_UPLOAD_DIR, nextFilename);
-      if (fs.existsSync(nextPath)) {
+      const existingList = await supabase.storage.from(SUPABASE_STORAGE_BUCKET).list(SUPABASE_MEDIA_FOLDER, {
+        limit: 1,
+        offset: 0,
+        search: nextFilename,
+      });
+
+      if (existingList.error) {
+        throw new Error(existingList.error.message || 'Unable to verify media filename uniqueness.');
+      }
+
+      if ((existingList.data || []).some((entry) => entry.name === nextFilename)) {
         req.session.mediaError = 'A media file with that name already exists.';
         return redirectWithSessionSave(req, res, buildMediaRedirectUrl(returnTo));
       }
 
-      await fs.promises.rename(currentPath, nextPath);
+      const moveResult = await supabase.storage
+        .from(SUPABASE_STORAGE_BUCKET)
+        .move(currentPath, createStorageObjectPath(nextFilename));
+
+      if (moveResult.error) {
+        throw new Error(moveResult.error.message || 'Unable to rename media file.');
+      }
 
       req.session.mediaMessage = 'Media file renamed successfully.';
       req.session.mediaError = null;
@@ -1507,14 +1631,20 @@ class AdminController {
     try {
       const returnTo = getMediaReturnTo(req.body.returnTo);
       const filename = getMediaFilenameFromParam(req.params.id);
-      const filePath = path.join(MEDIA_UPLOAD_DIR, filename);
 
-      if (!filename || !fs.existsSync(filePath) || !isImageFile(filename)) {
+      if (!filename || !isImageFile(filename)) {
         req.session.mediaError = 'Media file was not found.';
         return redirectWithSessionSave(req, res, buildMediaRedirectUrl(returnTo));
       }
 
-      await fs.promises.unlink(filePath);
+      const supabase = ensureSupabaseStorageClient();
+      const removeResult = await supabase.storage
+        .from(SUPABASE_STORAGE_BUCKET)
+        .remove([createStorageObjectPath(filename)]);
+
+      if (removeResult.error) {
+        throw new Error(removeResult.error.message || 'Unable to delete media file.');
+      }
 
       req.session.mediaMessage = 'Media deleted successfully.';
       req.session.mediaError = null;

@@ -1,12 +1,14 @@
 require('dotenv').config();
 
+const hasDatabaseUrl = Boolean(process.env.DATABASE_URL);
+
 // Validate required environment variables
+const requiredDbEnvVars = hasDatabaseUrl
+  ? ['DATABASE_URL']
+  : ['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
+
 const requiredEnvVars = [
-  'DB_HOST',
-  'DB_PORT',
-  'DB_NAME',
-  'DB_USER',
-  'DB_PASSWORD',
+  ...requiredDbEnvVars,
   'SESSION_SECRET',
   'SUPER_ADMIN_NAME',
   'SUPER_ADMIN_EMAIL',
@@ -30,6 +32,7 @@ if (missingEnvVars.length > 0) {
 // Environment configuration
 module.exports = {
   database: {
+    url: process.env.DATABASE_URL || '',
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10),
     name: process.env.DB_NAME,

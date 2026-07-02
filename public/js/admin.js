@@ -595,7 +595,9 @@
         return;
       }
 
-      var absoluteUrl = window.location.origin + mediaUrl;
+      var absoluteUrl = /^https?:\/\//i.test(mediaUrl)
+        ? mediaUrl
+        : window.location.origin + mediaUrl;
       var onSuccess = function () {
         var success = document.querySelector('.form__success');
         var error = document.querySelector('.form__error');

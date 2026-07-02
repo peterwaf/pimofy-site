@@ -7,17 +7,19 @@ const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
 
 // Create Sequelize instance
-const sequelize = new Sequelize(
-  dbConfig.database,
-  dbConfig.username,
-  dbConfig.password,
-  {
-    host: dbConfig.host,
-    port: dbConfig.port,
-    dialect: dbConfig.dialect,
-    logging: dbConfig.logging,
-  }
-);
+const sequelize = dbConfig.url
+  ? new Sequelize(dbConfig.url, {
+      dialect: dbConfig.dialect,
+      logging: dbConfig.logging,
+      dialectOptions: dbConfig.dialectOptions,
+    })
+  : new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
+      host: dbConfig.host,
+      port: dbConfig.port,
+      dialect: dbConfig.dialect,
+      logging: dbConfig.logging,
+      dialectOptions: dbConfig.dialectOptions,
+    });
 
 // Initialize models
 const User = UserModel(sequelize);

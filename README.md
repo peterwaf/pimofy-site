@@ -98,6 +98,72 @@ Keep `.env` private and do not commit it to version control.
 - Confirm migrations and seed data ran successfully.
 - Verify the admin account password is changed from the initial seed value.
 
+## Deploy on Netlify
+
+This project is an Express server rendered through a Netlify Function.
+
+### 1. Netlify adapter files
+
+These files are already included:
+
+- `netlify.toml`
+- `netlify/functions/app.js`
+
+### 2. Connect your repository
+
+1. In Netlify, choose **Add new site** -> **Import from Git**.
+2. Select this repository and branch.
+3. Build command: `npm install`
+4. Functions directory: `netlify/functions`
+
+### 3. Configure environment variables
+
+In Netlify Site Settings -> Environment Variables, add all required values from your local `.env`.
+
+At minimum, configure:
+
+- `DATABASE_URL`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_STORAGE_BUCKET` (optional, defaults to `media`)
+- `SUPABASE_MEDIA_FOLDER` (optional, defaults to `blog-posts`)
+- `SESSION_SECRET`
+- `SUPER_ADMIN_NAME`
+- `SUPER_ADMIN_EMAIL`
+- `SUPER_ADMIN_PASSWORD`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `CONTACT_EMAIL`
+- `ADMIN_EMAIL`
+- `APP_URL` (set to your Netlify URL)
+- `NODE_ENV=production`
+
+### 4. Apply database migrations
+
+Run these commands against your production database before first traffic:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+### 5. Validate deployment
+
+After deploy, verify:
+
+- Public pages load.
+- Admin login works.
+- Contact form works.
+- Admin create/update/delete flows succeed.
+
+### 6. Upload storage caveat
+
+Netlify Functions use ephemeral filesystem storage. Local uploads under `public/uploads` are not durable in production.
+
+For reliable production media handling, move uploads to object storage (for example Supabase Storage) and persist public URLs in the database.
+
 ## Notes
 
 - Static uploads are stored under `public/uploads`.
