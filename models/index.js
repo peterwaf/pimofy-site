@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const pg = require('pg');
 const config = require('../config/database');
 const UserModel = require('./User');
 const BlogPostModel = require('./BlogPost');
@@ -10,6 +11,7 @@ const dbConfig = config[env];
 const sequelize = dbConfig.url
   ? new Sequelize(dbConfig.url, {
       dialect: dbConfig.dialect,
+      dialectModule: pg,
       logging: dbConfig.logging,
       dialectOptions: dbConfig.dialectOptions,
     })
@@ -17,6 +19,7 @@ const sequelize = dbConfig.url
       host: dbConfig.host,
       port: dbConfig.port,
       dialect: dbConfig.dialect,
+      dialectModule: pg,
       logging: dbConfig.logging,
       dialectOptions: dbConfig.dialectOptions,
     });
