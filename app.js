@@ -4,10 +4,20 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs');
 const path = require('path');
 const config = require('./config/environment');
 const { csrfTokenMiddleware, csrfProtectionMiddleware } = require('./middleware/csrf');
 const { sequelize } = require('./models');
+
+function resolveRuntimePath(...segments) {
+  const fromCwd = path.join(process.cwd(), ...segments);
+  if (fs.existsSync(fromCwd)) {
+    return fromCwd;
+  }
+
+  return path.join(__dirname, ...segments);
+}
 
 // Create Express app
 const app = express();
@@ -63,7 +73,7 @@ if (config.app.isProduction) {
 // VIEW ENGINE CONFIGURATION
 // ============================================
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', resolveRuntimePath('views'));
 
 // ============================================
 // BODY PARSER & FORM DATA
@@ -102,16 +112,16 @@ app.locals.sessionStore = sessionStore;
 // ============================================
 // STATIC FILES
 // ============================================
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.static(resolveRuntimePath('public')));
+app.use('/assets', express.static(resolveRuntimePath('assets')));
 
 // Keep legacy static file URLs from the original HTML site working.
 app.get(['/styles.css', '/css/styles.css'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'styles.css'));
+  res.sendFile(resolveRuntimePath('styles.css'));
 });
 
 app.get(['/script.js', '/js/script.js'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'script.js'));
+  res.sendFile(resolveRuntimePath('script.js'));
 });
 
 // ============================================
@@ -124,6 +134,7 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.currentYear = new Date().getFullYear();
   res.locals.currentPath = req.path;
+  res.locals.taxonomySummary = res.locals.taxonomySummary || null;
   next();
 });
 

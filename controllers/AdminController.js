@@ -11,7 +11,18 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const SUPABASE_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'media';
 const SUPABASE_MEDIA_FOLDER = process.env.SUPABASE_MEDIA_FOLDER || 'blog-posts';
 const DEFAULT_CATEGORY = 'Uncategorized';
-const TAXONOMY_CONFIG_PATH = path.join(__dirname, '..', 'config', 'taxonomy.json');
+
+function resolveTaxonomyConfigPath() {
+  const candidates = [
+    path.join(process.cwd(), 'config', 'taxonomy.json'),
+    path.join(__dirname, '..', 'config', 'taxonomy.json'),
+  ];
+
+  const existingPath = candidates.find(candidate => fs.existsSync(candidate));
+  return existingPath || candidates[0];
+}
+
+const TAXONOMY_CONFIG_PATH = resolveTaxonomyConfigPath();
 
 let supabaseStorageClient = null;
 

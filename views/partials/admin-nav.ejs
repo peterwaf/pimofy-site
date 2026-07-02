@@ -1,4 +1,7 @@
 <aside class="admin-sidebar" id="admin-sidebar">
+  <% const summary = typeof taxonomySummary !== 'undefined' && taxonomySummary
+    ? taxonomySummary
+    : { articlesCount: 0, categoriesCount: 0, tagsCount: 0 }; %>
   <div class="admin-sidebar__topbar">
     <button type="button" class="admin-sidebar__close" data-admin-nav-close aria-label="Close navigation">×</button>
   </div>
@@ -14,15 +17,15 @@
 
   <nav class="admin-nav" aria-label="Admin navigation">
     <a href="/admin" class="admin-nav__link <%= currentPath === '/admin' ? 'is-active' : '' %>"><span class="admin-nav__label">Dashboard</span></a>
-    <a href="/admin/articles" class="admin-nav__link <%= currentPath.startsWith('/admin/articles') ? 'is-active' : '' %>"><span class="admin-nav__label">Articles</span><span class="admin-nav__count"><%= taxonomySummary ? taxonomySummary.articlesCount : 0 %></span></a>
+    <a href="/admin/articles" class="admin-nav__link <%= currentPath.startsWith('/admin/articles') ? 'is-active' : '' %>"><span class="admin-nav__label">Articles</span><span class="admin-nav__count"><%= summary.articlesCount %></span></a>
     <div class="admin-nav__section">
       <div class="admin-nav__section-head">
         <a href="/admin/taxonomy" class="admin-nav__section-label <%= currentPath.startsWith('/admin/taxonomy') ? 'is-active' : '' %>">Taxonomies</a>
-        <span class="admin-nav__count"><%= taxonomySummary ? taxonomySummary.categoriesCount + taxonomySummary.tagsCount : 0 %></span>
+        <span class="admin-nav__count"><%= summary.categoriesCount + summary.tagsCount %></span>
       </div>
       <div class="admin-nav__submenu">
-        <a href="/admin/taxonomy/categories" class="admin-nav__sublink <%= currentPath === '/admin/taxonomy/categories' ? 'is-active' : '' %>"><span class="admin-nav__label">Categories</span><span class="admin-nav__count"><%= taxonomySummary ? taxonomySummary.categoriesCount : 0 %></span></a>
-        <a href="/admin/taxonomy/tags" class="admin-nav__sublink <%= currentPath === '/admin/taxonomy/tags' ? 'is-active' : '' %>"><span class="admin-nav__label">Tags</span><span class="admin-nav__count"><%= taxonomySummary ? taxonomySummary.tagsCount : 0 %></span></a>
+        <a href="/admin/taxonomy/categories" class="admin-nav__sublink <%= currentPath === '/admin/taxonomy/categories' ? 'is-active' : '' %>"><span class="admin-nav__label">Categories</span><span class="admin-nav__count"><%= summary.categoriesCount %></span></a>
+        <a href="/admin/taxonomy/tags" class="admin-nav__sublink <%= currentPath === '/admin/taxonomy/tags' ? 'is-active' : '' %>"><span class="admin-nav__label">Tags</span><span class="admin-nav__count"><%= summary.tagsCount %></span></a>
       </div>
     </div>
     <a href="/admin/articles/new" class="admin-nav__link <%= currentPath === '/admin/articles/new' ? 'is-active' : '' %>"><span class="admin-nav__label">New article</span></a>
