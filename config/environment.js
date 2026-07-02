@@ -10,15 +10,6 @@ const requiredDbEnvVars = hasDatabaseUrl
 const requiredEnvVars = [
   ...requiredDbEnvVars,
   'SESSION_SECRET',
-  'SUPER_ADMIN_NAME',
-  'SUPER_ADMIN_EMAIL',
-  'SUPER_ADMIN_PASSWORD',
-  'SMTP_HOST',
-  'SMTP_PORT',
-  'SMTP_USER',
-  'SMTP_PASS',
-  'CONTACT_EMAIL',
-  'ADMIN_EMAIL',
 ];
 
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
