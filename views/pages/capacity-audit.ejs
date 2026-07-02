@@ -3,7 +3,7 @@
   <header class="header">
     <div class="container">
       <nav class="nav" aria-label="Primary">
-        <a class="nav__logo" href="/" aria-label="Pimofy Digital home"><img src="/assets/logo.png" alt="Pimofy Digital" /></a>
+        <a class="nav__logo" href="/" aria-label="Pimofy Digital home"><img src="/assets/logo.png" alt="Pimofy Digital" width="200" height="50" /></a>
         <ul class="nav__menu">
           <li><a href="/">Home</a></li>
           <li class="dropdown" aria-expanded="false">
@@ -38,7 +38,10 @@
           <a href="/contact" class="btn btn--primary btn--lg">Book Your Free Audit</a>
         </div>
         <div class="hero__media reveal" data-delay="1">
-          <img src="/assets/capacity-donut.jpg" alt="Donut chart highlighting 68% of team capacity used" width="1024" height="768" />
+          <picture>
+            <source srcset="/assets/capacity-donut.webp" type="image/webp" />
+            <img src="/assets/capacity-donut.jpg" alt="Donut chart highlighting 68% of team capacity used" width="1024" height="768" fetchpriority="high" decoding="async" />
+          </picture>
         </div>
       </div>
     </section>
@@ -158,7 +161,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer__grid">
-        <div><img src="/assets/logo.png" alt="Pimofy Digital" class="footer__logo" /><p>Dedicated data operations for SaaS and Ecommerce companies. Based in Nairobi, serving the UK, Europe, and the USA.</p></div>
+        <div><img src="/assets/logo.png" alt="Pimofy Digital" class="footer__logo" width="200" height="50" /><p>Dedicated data operations for SaaS and Ecommerce companies. Based in Nairobi, serving the UK, Europe, and the USA.</p></div>
         <div><h4>Solutions</h4><ul><li><a href="/solutions">Overview</a></li><li><a href="/data-operations">Data Operations Pod&trade;</a></li><li><a href="/capacity-audit">Capacity Audit&trade;</a></li></ul></div>
         <div><h4>Company</h4><ul><li><a href="/industries">Industries</a></li><li><a href="/blog">Resources</a></li><li><a href="/about">About</a></li></ul></div>
         <div><h4>Get Started</h4><ul><li><a href="/contact">Book a Call</a></li><li><a href="mailto:info@pimofydigital.com">info@pimofydigital.com</a></li></ul></div>

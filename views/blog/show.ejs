@@ -17,7 +17,7 @@
   </section>
 
   <div class="container max-w-900">
-    <img class="article-hero__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" />
+    <img class="article-hero__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" fetchpriority="high" decoding="async" />
   </div>
 
   <!-- ARTICLE BODY -->
@@ -54,7 +54,7 @@
           <% related.forEach((relPost, index) => { %>
             <a class="card article reveal" <% if (index > 0) { %>data-delay="<%= Math.min(index, 2) %>"<% } %> href="/blog/<%= relPost.slug %>">
               <div class="article__thumb">
-                <img class="article__img" src="<%= relPost.featuredImage %>" alt="<%= relPost.title %>" width="1024" height="576" />
+                <img class="article__img" src="<%= relPost.featuredImage %>" alt="<%= relPost.title %>" width="1024" height="576" loading="lazy" decoding="async" />
                 <span class="tag tag--overlay"><%= relPost.category || 'Uncategorized' %></span>
               </div>
               <div class="article__body">

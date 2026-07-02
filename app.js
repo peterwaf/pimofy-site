@@ -140,15 +140,31 @@ app.locals.currentYear = new Date().getFullYear();
 // ============================================
 // STATIC FILES
 // ============================================
-app.use(express.static(resolveRuntimePath('public')));
-app.use('/assets', express.static(resolveRuntimePath('assets')));
+// Long-lived, immutable caching for hashed/rarely-changing assets. Uploaded
+// media and images are content-stable, so a 1-year cache is safe and keeps
+// repeat views off the network.
+const STATIC_MAX_AGE = config.app.isProduction ? '365d' : 0;
+const staticOptions = {
+  maxAge: STATIC_MAX_AGE,
+  immutable: config.app.isProduction,
+};
 
-// Keep legacy static file URLs from the original HTML site working.
+app.use(express.static(resolveRuntimePath('public'), staticOptions));
+app.use('/assets', express.static(resolveRuntimePath('assets'), staticOptions));
+
+// Keep legacy static file URLs from the original HTML site working. These files
+// can change between deploys, so cache briefly and allow revalidation.
+const TEXT_ASSET_CACHE = config.app.isProduction
+  ? 'public, max-age=86400, must-revalidate'
+  : 'no-cache';
+
 app.get(['/styles.css', '/css/styles.css'], (req, res) => {
+  res.setHeader('Cache-Control', TEXT_ASSET_CACHE);
   res.sendFile(resolveRuntimePath('styles.css'));
 });
 
 app.get(['/script.js', '/js/script.js'], (req, res) => {
+  res.setHeader('Cache-Control', TEXT_ASSET_CACHE);
   res.sendFile(resolveRuntimePath('script.js'));
 });
 

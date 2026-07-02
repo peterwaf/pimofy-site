@@ -13,7 +13,7 @@
     <div class="container">
       <nav class="nav" aria-label="Primary">
         <a class="nav__logo" href="/" aria-label="Pimofy Digital home">
-          <img src="/assets/logo.png" alt="Pimofy Digital" />
+          <img src="/assets/logo.png" alt="Pimofy Digital" width="200" height="50" />
         </a>
         <ul class="nav__menu">
           <li><a href="/" aria-current="page">Home</a></li>
@@ -62,7 +62,10 @@
           </div>
         </div>
         <div class="hero__media reveal" data-delay="1">
-          <img src="/assets/hero-home.jpg" alt="Pimofy data operations specialists working in a modern office" width="1024" height="768" />
+          <picture>
+            <source srcset="/assets/hero-home.webp" type="image/webp" />
+            <img src="/assets/hero-home.jpg" alt="Pimofy data operations specialists working in a modern office" width="1024" height="768" fetchpriority="high" decoding="async" />
+          </picture>
         </div>
       </div>
 
@@ -222,7 +225,7 @@
     <div class="container">
       <div class="footer__grid">
         <div>
-          <img src="/assets/logo.png" alt="Pimofy Digital" class="footer__logo" />
+          <img src="/assets/logo.png" alt="Pimofy Digital" class="footer__logo" width="200" height="50" />
           <p>Dedicated data operations for SaaS and Ecommerce companies. Based in Nairobi, serving the UK, Europe, and the USA.</p>
         </div>
         <div>
@@ -262,4 +265,4 @@
     </div>
   </footer>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/script.js" defer></script>
+  <script src="/script.js" defer></script>

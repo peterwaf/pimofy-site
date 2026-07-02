@@ -36,7 +36,7 @@
           <% posts.forEach((post) => { %>
             <a class="card article" href="/blog/<%= post.slug %>">
               <div class="article__thumb">
-                <img class="article__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" />
+                <img class="article__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" loading="lazy" decoding="async" />
                 <span class="tag tag--overlay"><%= post.category || 'Uncategorized' %></span>
               </div>
               <div class="article__body">

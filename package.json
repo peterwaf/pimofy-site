@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "optimize:images": "node scripts/optimize-images.js",
+    "generate:critical": "node scripts/generate-critical.js",
     "db:migrate": "sequelize-cli db:migrate",
     "db:seed": "sequelize-cli db:seed:all",
     "db:reset": "sequelize-cli db:drop && sequelize-cli db:create && sequelize-cli db:migrate && sequelize-cli db:seed:all"
@@ -41,6 +43,9 @@
     "vercel": "^54.18.7"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "penthouse": "^2.3.3",
+    "puppeteer": "^24.43.1",
+    "sharp": "^0.35.3"
   }
 }

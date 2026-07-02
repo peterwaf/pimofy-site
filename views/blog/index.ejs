@@ -36,7 +36,7 @@
       <% posts.forEach((post, index) => { %>
         <a class="card article reveal" <% if (index > 0) { %>data-delay="<%= Math.min(index, 2) %>"<% } %> href="/blog/<%= post.slug %>">
           <div class="article__thumb">
-            <img class="article__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" />
+            <img class="article__img" src="<%= post.featuredImage %>" alt="<%= post.title %>" width="1024" height="576" decoding="async" <% if (index === 0) { %>fetchpriority="high"<% } else { %>loading="lazy"<% } %> />
             <span class="tag tag--overlay"><%= post.category || 'Uncategorized' %></span>
           </div>
           <div class="article__body">

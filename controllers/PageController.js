@@ -8,6 +8,7 @@ class PageController {
         title: 'Dedicated Data Operations for SaaS & Ecommerce | Pimofy Digital',
         description:
           'Pimofy runs your data operations with a dedicated specialist, QA, and weekly reporting. 98% accuracy, 80% less backlog. Book a free capacity audit.',
+        preloadImage: '/assets/hero-home.webp',
       });
     } catch (error) {
       next(error);
@@ -21,6 +22,7 @@ class PageController {
         title: 'Data Operations Solutions for SaaS & Ecommerce | Pimofy',
         description:
           'One focused solution built around your data. Explore the Dedicated Data Operations Pod and a free Operations Capacity Audit for growing teams.',
+        preloadImage: '/assets/data-warehouse.webp',
       });
     } catch (error) {
       next(error);
@@ -34,6 +36,7 @@ class PageController {
         title: 'The Data Operations Pod | Pimofy Digital',
         description:
           'Discover how Pimofy\'s Data Operations Pod combines specialists, QA, and reporting to restore team capacity without hiring overhead.',
+        preloadImage: '/assets/data-specialist.webp',
       });
     } catch (error) {
       next(error);
@@ -47,6 +50,7 @@ class PageController {
         title: 'Free Operations Capacity Audit | Pimofy Digital',
         description:
           'Book a free Operations Capacity Audit to identify repetitive data tasks, quantify lost hours, and map a practical execution plan.',
+        preloadImage: '/assets/capacity-donut.webp',
       });
     } catch (error) {
       next(error);
@@ -71,6 +75,7 @@ class PageController {
       res.render('pages/about', {
         title: 'About Pimofy Digital',
         description: 'Learn about our team, our mission, and why we specialize in data operations.',
+        preloadImage: '/assets/team.webp',
       });
     } catch (error) {
       next(error);
