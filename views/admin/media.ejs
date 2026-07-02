@@ -15,7 +15,7 @@
       </div>
 
       <div class="card media-upload-card" style="margin-bottom: 20px;">
-        <form action="/admin/media/upload" method="POST" enctype="multipart/form-data" class="form" data-media-upload-form>
+        <form action="/admin/media/upload?_csrf=<%= encodeURIComponent(csrfToken) %>" method="POST" enctype="multipart/form-data" class="form" data-media-upload-form>
           <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
           <input type="hidden" name="returnTo" value="<%= mediaReturnTo || '' %>" />
           <div class="field">

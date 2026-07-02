@@ -21,7 +21,7 @@
         <li><a href="/blog" <% if (currentPath === '/blog' || currentPath.startsWith('/blog/')) { %>aria-current="page"<% } %>>Resources</a></li>
         <li><a href="/about">About</a></li>
         <li class="nav__mobile-cta"><a href="/contact" class="btn btn--primary">Book a Call</a></li>
-        <% if (user) { %>
+        <% if (isAuthenticated) { %>
           <li><a href="/admin">Admin</a></li>
           <li>
             <form method="POST" action="/auth/logout" class="nav__logout-form">
@@ -33,7 +33,7 @@
       </ul>
       <div class="nav__actions">
         <a href="/contact" class="btn btn--primary">Book a Call</a>
-        <% if (user) { %>
+        <% if (isAuthenticated) { %>
           <a href="/admin" class="btn btn--ghost">Admin</a>
         <% } %>
       </div>

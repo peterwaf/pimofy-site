@@ -2,13 +2,7 @@
   "version": 2,
   "functions": {
     "api/index.js": {
-      "includeFiles": [
-        "views/**",
-        "assets/**",
-        "config/taxonomy.json",
-        "styles.css",
-        "script.js"
-      ]
+      "includeFiles": "{views/**,assets/**,config/taxonomy.json,styles.css,script.js}"
     }
   },
   "routes": [

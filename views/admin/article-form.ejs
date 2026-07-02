@@ -32,7 +32,7 @@
           ? formData.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
           : (article && Array.isArray(article.tags) ? article.tags : [])); %>
 
-      <form method="POST" action="<%= isNew ? '/admin/articles' : '/admin/articles/' + article.id %>" enctype="multipart/form-data" class="form admin-form" style="gap: 14px;">
+      <form method="POST" action="<%= (isNew ? '/admin/articles' : '/admin/articles/' + article.id) + '?_csrf=' + encodeURIComponent(csrfToken) %>" enctype="multipart/form-data" class="form admin-form" style="gap: 14px;">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
         <div class="field">
           <label for="title">Title</label>

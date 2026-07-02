@@ -13,7 +13,7 @@
         <p style="margin-top:0;color:var(--muted);">Required headers: <strong>title</strong>, <strong>slug</strong>, <strong>excerpt</strong>, <strong>content</strong></p>
         <p style="color:var(--muted);">Optional headers: category, tags, seoTitle, metaDescription, keywords, published, publishDate</p>
 
-        <form method="POST" action="/admin/articles/import" enctype="multipart/form-data" class="form" style="gap: 14px;">
+        <form method="POST" action="/admin/articles/import?_csrf=<%= encodeURIComponent(csrfToken) %>" enctype="multipart/form-data" class="form" style="gap: 14px;">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
           <div class="field">
             <label for="mode">Import mode</label>

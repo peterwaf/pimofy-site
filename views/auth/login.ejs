@@ -1,19 +1,13 @@
-<a class="skip-link" href="#main">Skip to content</a>
-
-<!-- Header / Navigation -->
-<%- include('../partials/header') %>
-
 <main id="main">
-<section class="hero hero--compact">
-  <div class="container text-center reveal max-w-500">
-    <h1>Admin Login</h1>
-    <p class="lead">Access the Pimofy Digital admin dashboard</p>
-  </div>
-</section>
-
 <section class="section section--compact">
-  <div class="container max-w-500">
-    <div class="card reveal">
+  <div class="container max-w-500" style="padding-top: 32px; padding-bottom: 32px;">
+    <div style="display: flex; justify-content: center; align-items: center; padding: 8px 0 18px;">
+      <img src="/assets/logo.png" alt="Pimofy Digital" width="180" height="48" style="display: block; max-width: 100%; height: auto;" />
+    </div>
+
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Admin Login</h1>
+
+    <div class="card">
       <% if (locals.errors && errors.length) { %>
         <div class="form__error show">
           <strong>Login Failed:</strong>
@@ -39,18 +33,7 @@
 
         <button type="submit" class="btn btn--primary btn--lg login-submit">Sign In</button>
       </form>
-
-      <div class="login-divider">
-        <p class="cell-muted form__note">
-          Contact <a href="mailto:hello@pimofydigital.com">hello@pimofydigital.com</a> if you need login assistance.
-        </p>
-      </div>
     </div>
   </div>
 </section>
 </main>
-
-<!-- Footer -->
-<%- include('../partials/footer') %>
-
-<script src="/js/script.js" defer></script>
