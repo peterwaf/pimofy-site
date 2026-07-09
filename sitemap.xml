@@ -1,19 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://pimofydigital.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://pimofydigital.com/solutions.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://pimofydigital.com/data-operations.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://pimofydigital.com/capacity-audit.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://pimofydigital.com/industries.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://pimofydigital.com/resources.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://pimofydigital.com/saas-capacity-problem.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://pimofydigital.com/hidden-cost-of-bad-data.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://pimofydigital.com/protect-team-capacity-as-you-scale.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://pimofydigital.com/outsourcing-buying-capacity-not-labor.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://pimofydigital.com/why-best-people-shouldnt-do-data-entry.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://pimofydigital.com/dedicated-data-operations-pod-results.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://pimofydigital.com/about.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://pimofydigital.com/contact.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://pimofydigital.com/terms.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://pimofydigital.com/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
+  <url>
+    <loc>https://pimofydigital.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/solutions</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/data-operations</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/capacity-audit</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/industries</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/blog/outsourcing-buying-capacity-not-labor</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/blog/why-best-people-shouldnt-do-data-entry</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/blog/hidden-cost-of-bad-data</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/blog/dedicated-data-operations-pod-results</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/blog/protect-team-capacity-as-you-scale</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/blog/saas-capacity-problem</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://pimofydigital.com/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
 </urlset>
